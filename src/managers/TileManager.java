@@ -440,52 +440,60 @@ public final class TileManager {
      * The channels create separate districts and coves while preserving
      * enough land for the existing farm, village, forest and beach areas.
      */
+    /**
+     * Carves wide, winding sea channels through the archipelago.
+     * The north/south channel separates the west and east districts; the
+     * east/west channel separates the northern village from southern coves.
+     */
     private void carveChannels() {
-        // East-west channel: a winding blue ribbon separating the upper
-        // village district from the lower orchard and southern coves.
-        for (int x = 12; x <= mapWidth - 12; x++) {
-            double wave = Math.sin((x - 12) * 0.075) * 4.2
-                    + Math.sin((x - 12) * 0.17) * 1.5;
-            int centerY = 59 + (int) Math.round(wave);
-            for (int y = centerY - 1; y <= centerY + 1; y++) {
+        // East-west sea channel. Vary the centerline so it feels like a river
+        // mouth, not a ruler-straight trench. Five tiles wide at its broadest.
+        for (int x = 5; x < mapWidth - 5; x++) {
+            double wave = Math.sin(x * 0.061) * 4.0
+                    + Math.sin(x * 0.137 + 0.8) * 1.8;
+            int centerY = 58 + (int) Math.round(wave);
+            int halfWidth = 2 + (int) Math.round((1.0 + Math.sin(x * 0.09)) * 0.5);
+            for (int y = centerY - halfWidth; y <= centerY + halfWidth; y++) {
                 if (x > 1 && y > 1 && x < mapWidth - 2 && y < mapHeight - 2) {
                     mapTiles[y][x] = TILE_WATER;
                 }
             }
         }
 
-        // North-south channel: opens the center into western and eastern
-        // island chains, with a few natural bends instead of a straight cut.
-        for (int y = 10; y <= mapHeight - 10; y++) {
-            double wave = Math.sin((y - 10) * 0.085) * 4.0
-                    + Math.sin((y - 10) * 0.19) * 1.2;
+        // North-south channel, bending gently toward the east near the south.
+        for (int y = 5; y < mapHeight - 5; y++) {
+            double wave = Math.sin(y * 0.073 + 0.4) * 3.4
+                    + Math.sin(y * 0.151) * 1.4;
             int centerX = 91 + (int) Math.round(wave);
-            for (int x = centerX - 1; x <= centerX + 1; x++) {
+            int halfWidth = 2 + (int) Math.round((1.0 + Math.sin(y * 0.11 + 1.0)) * 0.5);
+            for (int x = centerX - halfWidth; x <= centerX + halfWidth; x++) {
                 if (x > 1 && y > 1 && x < mapWidth - 2 && y < mapHeight - 2) {
                     mapTiles[y][x] = TILE_WATER;
                 }
             }
         }
 
-        // Small coves and inlets along the east and southwest shore.
-        carveEllipse(145, 71, 5, 8, TILE_WATER);
-        carveEllipse(26, 83, 5, 7, TILE_WATER);
-        carveEllipse(132, 18, 5, 4, TILE_WATER);
+        // Small turquoise coves open into the outer coastline.
+        carveEllipse(13, 76, 5, 8, TILE_WATER);
+        carveEllipse(145, 16, 5, 5, TILE_WATER);
+        carveEllipse(145, 101, 6, 5, TILE_WATER);
+        carveEllipse(71, 7, 5, 3, TILE_WATER);
     }
 
     /**
-     * Plank bridges over the two canals. TILE_DOCK is walkable and uses the
-     * same timber rendering as the existing fishing dock.
+     * Walkable timber crossings at the natural road intersections.
+     * Horizontal bridges cross the north/south channel; vertical bridges
+     * cross the east/west channel.
      */
     private void buildCanalBridges() {
-        // Horizontal canal bridges. Each bridge is a compact 5-tile span.
-        int[] bridgeXs = {35, 73, 111, 137};
-        for (int bridgeX : bridgeXs) {
-            int centerY = 59 + (int) Math.round(
-                    Math.sin((bridgeX - 12) * 0.075) * 4.2
-                    + Math.sin((bridgeX - 12) * 0.17) * 1.5);
-            for (int x = bridgeX - 2; x <= bridgeX + 2; x++) {
-                for (int y = centerY - 1; y <= centerY + 1; y++) {
+        // Cross the north/south canal on the main north-south/east-west roads.
+        int[] verticalCanalCrossings = {24, 41, 70, 78};
+        for (int bridgeY : verticalCanalCrossings) {
+            int centerX = 91 + (int) Math.round(
+                    Math.sin(bridgeY * 0.073 + 0.4) * 3.4
+                    + Math.sin(bridgeY * 0.151) * 1.4);
+            for (int x = centerX - 4; x <= centerX + 4; x++) {
+                for (int y = bridgeY - 1; y <= bridgeY + 1; y++) {
                     if (x >= 0 && y >= 0 && x < mapWidth && y < mapHeight) {
                         mapTiles[y][x] = TILE_DOCK;
                     }
@@ -493,14 +501,14 @@ public final class TileManager {
             }
         }
 
-        // Vertical canal bridges.
-        int[] bridgeYs = {27, 48, 78};
-        for (int bridgeY : bridgeYs) {
-            int centerX = 91 + (int) Math.round(
-                    Math.sin((bridgeY - 10) * 0.085) * 4.0
-                    + Math.sin((bridgeY - 10) * 0.19) * 1.2);
-            for (int y = bridgeY - 2; y <= bridgeY + 2; y++) {
-                for (int x = centerX - 1; x <= centerX + 1; x++) {
+        // Cross the east/west canal at the farm road and southern causeways.
+        int[] horizontalCanalCrossings = {37, 55, 123};
+        for (int bridgeX : horizontalCanalCrossings) {
+            double wave = Math.sin(bridgeX * 0.061) * 4.0
+                    + Math.sin(bridgeX * 0.137 + 0.8) * 1.8;
+            int centerY = 58 + (int) Math.round(wave);
+            for (int y = centerY - 4; y <= centerY + 4; y++) {
+                for (int x = bridgeX - 1; x <= bridgeX + 1; x++) {
                     if (x >= 0 && y >= 0 && x < mapWidth && y < mapHeight) {
                         mapTiles[y][x] = TILE_DOCK;
                     }
