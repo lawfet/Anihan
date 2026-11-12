@@ -1,0 +1,26 @@
+name: Java build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  compile-and-smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Compile game
+        run: |
+          mkdir -p bin
+          javac -Xlint:all -d bin $(find src/engine src/managers src/states src/entities src/farming src/time src/inventory src/inputs src/validation -name '*.java' -print)
+      - name: Verify bundled artwork and world map
+        run: java -Djava.awt.headless=true -cp bin validation.AssetSmokeTest
