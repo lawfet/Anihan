@@ -176,6 +176,10 @@ public final class TileManager {
     // ==========================================
     private void generateMap() {
         loadLandLayout();
+        // Carve broad, winding channels before roads and buildings are placed.
+        // This turns the large landmass into connected islands like the
+        // archipelago reference instead of adding a few tiny dots offshore.
+        carveChannels();
         reserved = new boolean[mapHeight][mapWidth];
         pond = new boolean[mapHeight][mapWidth];
         Random rng = new Random(73_421L);
@@ -332,6 +336,9 @@ public final class TileManager {
         reserveRect(43, 21, 55, 27); // plaza
         reserveRect(53, 7, 64, 16);  // orchard
 
+        // Timber bridges reconnect the island districts across the canals.
+        buildCanalBridges();
+
         // A little wooden dock on the south shore.
         buildDock();
 
@@ -425,6 +432,80 @@ public final class TileManager {
             }
         } catch (java.io.IOException | java.util.NoSuchElementException exception) {
             throw new IllegalStateException("Cannot read maps/farm_map.txt", exception);
+        }
+    }
+
+    /**
+     * Cuts two broad, gently winding sea channels through the island.
+     * The channels create separate districts and coves while preserving
+     * enough land for the existing farm, village, forest and beach areas.
+     */
+    private void carveChannels() {
+        // East-west channel: a winding blue ribbon separating the upper
+        // village district from the lower orchard and southern coves.
+        for (int x = 12; x <= mapWidth - 12; x++) {
+            double wave = Math.sin((x - 12) * 0.075) * 4.2
+                    + Math.sin((x - 12) * 0.17) * 1.5;
+            int centerY = 59 + (int) Math.round(wave);
+            for (int y = centerY - 1; y <= centerY + 1; y++) {
+                if (x > 1 && y > 1 && x < mapWidth - 2 && y < mapHeight - 2) {
+                    mapTiles[y][x] = TILE_WATER;
+                }
+            }
+        }
+
+        // North-south channel: opens the center into western and eastern
+        // island chains, with a few natural bends instead of a straight cut.
+        for (int y = 10; y <= mapHeight - 10; y++) {
+            double wave = Math.sin((y - 10) * 0.085) * 4.0
+                    + Math.sin((y - 10) * 0.19) * 1.2;
+            int centerX = 91 + (int) Math.round(wave);
+            for (int x = centerX - 1; x <= centerX + 1; x++) {
+                if (x > 1 && y > 1 && x < mapWidth - 2 && y < mapHeight - 2) {
+                    mapTiles[y][x] = TILE_WATER;
+                }
+            }
+        }
+
+        // Small coves and inlets along the east and southwest shore.
+        carveEllipse(145, 71, 5, 8, TILE_WATER);
+        carveEllipse(26, 83, 5, 7, TILE_WATER);
+        carveEllipse(132, 18, 5, 4, TILE_WATER);
+    }
+
+    /**
+     * Plank bridges over the two canals. TILE_DOCK is walkable and uses the
+     * same timber rendering as the existing fishing dock.
+     */
+    private void buildCanalBridges() {
+        // Horizontal canal bridges. Each bridge is a compact 5-tile span.
+        int[] bridgeXs = {35, 73, 111, 137};
+        for (int bridgeX : bridgeXs) {
+            int centerY = 59 + (int) Math.round(
+                    Math.sin((bridgeX - 12) * 0.075) * 4.2
+                    + Math.sin((bridgeX - 12) * 0.17) * 1.5);
+            for (int x = bridgeX - 2; x <= bridgeX + 2; x++) {
+                for (int y = centerY - 1; y <= centerY + 1; y++) {
+                    if (x >= 0 && y >= 0 && x < mapWidth && y < mapHeight) {
+                        mapTiles[y][x] = TILE_DOCK;
+                    }
+                }
+            }
+        }
+
+        // Vertical canal bridges.
+        int[] bridgeYs = {27, 48, 78};
+        for (int bridgeY : bridgeYs) {
+            int centerX = 91 + (int) Math.round(
+                    Math.sin((bridgeY - 10) * 0.085) * 4.0
+                    + Math.sin((bridgeY - 10) * 0.19) * 1.2);
+            for (int y = bridgeY - 2; y <= bridgeY + 2; y++) {
+                for (int x = centerX - 1; x <= centerX + 1; x++) {
+                    if (x >= 0 && y >= 0 && x < mapWidth && y < mapHeight) {
+                        mapTiles[y][x] = TILE_DOCK;
+                    }
+                }
+            }
         }
     }
 
