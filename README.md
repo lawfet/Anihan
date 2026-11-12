@@ -1,79 +1,103 @@
-# Anihan
+# ANIHAN
 
-**Anihan** is a 2D Filipino farming adventure built with Java Swing, AWT, and Graphics2D.
+**Anihan** is a top-down 2D Filipino-inspired farming adventure made with Java 17, Swing, AWT, and Graphics2D. It uses the artwork already included in `res/` and does not require a third-party game engine or external libraries.
 
-This repository now contains a small playable foundation. It is intentionally dependency-free so it can be opened and run in VS Code or Eclipse with a JDK.
+## Run the game
 
-## Playable prototype
+### Requirements
+- JDK 17 or newer (a JDK, not only a JRE)
+- Visual Studio Code with the Extension Pack for Java, or Eclipse
 
-- Top-down movement with WASD or arrow keys
-- Pixel-art-inspired farm tiles, trees, a bahay kubo, and a palengke stall
-- Till soil, plant crops, water them, and harvest mature produce
-- Four crops: palay, ube, kamote, and pineapple
-- A day/night cycle with a night-time color overlay
-- Sell harvested goods at the palengke
-- Simple inventory, crop growth, and on-screen controls
+### Fastest option on Windows
+1. Clone or pull this repository.
+2. Open the repository folder in VS Code.
+3. Double-click `run.bat`, or run it from the VS Code terminal:
 
-## Requirements
-
-- JDK 17 or newer
-- No external libraries or game engine required
-
-## Run in VS Code
-
-1. Install a JDK 17+ and the Java extensions for VS Code.
-2. Clone the repository:
-
-   ```bash
-   git clone https://github.com/lawfet/Anihan.git
-   cd Anihan
+   ```bat
+   run.bat
    ```
 
-3. Open the folder in VS Code.
-4. Open `src/main/java/anihan/AnihanGame.java`.
-5. Run the `AnihanGame` class using **Run Java**.
+The script compiles the game into `bin/` and launches `engine.Main`. You can also compile without launching by running `compile.bat`.
 
-You can also run it from a terminal:
+### Run from the VS Code terminal
+From the repository root:
 
-```bash
-javac -d out src/main/java/anihan/AnihanGame.java
-java -cp out anihan.AnihanGame
+```bat
+if not exist bin mkdir bin
+javac -Xlint:all -d bin src\engine\*.java src\managers\*.java src\states\*.java src\entities\*.java src\farming\*.java src\time\*.java src\inventory\*.java src\inputs\*.java src\validation\*.java
+java -cp bin engine.Main
 ```
+
+Keep the `res/` directory beside `bin/`. The game loads its maps, sprites, crops, UI, and animal artwork from this resource folder.
 
 ## Controls
 
-| Key | Action |
+| Input | Action |
 |---|---|
-| WASD / Arrow keys | Move |
-| Space | Till nearby grass |
-| Q | Plant selected seed |
-| R | Water nearby planted crop |
-| E | Harvest mature crop / sell at market |
-| 1–4 | Select seed |
-| I | Toggle inventory panel |
-| H | Sleep and begin the next day |
+| W / A / S / D or Arrow keys | Move |
+| Shift + movement | Sprint (uses energy) |
+| 1–9 | Select a hotbar tool or seed |
+| Mouse wheel | Change selected hotbar slot |
+| Space or left mouse click | Use selected tool |
+| E or I | Open / close backpack |
+| Click a crop in backpack | Equip that crop's seeds in the selected seed slot |
+| Right-click a crop in backpack | Buy a seed pack |
+| F | Sleep when standing at the farmhouse door |
+| M | Open / close world map |
+| Esc | Pause menu |
 
-Stand next to a tile to work on it. Stand beside the palengke stall and press **E** to sell all harvested goods.
+### Farming loop
+1. Select the hoe in hotbar slot 1 and face an open grass tile. Press Space or left-click to till it.
+2. Select a seed slot (5–9), face the tilled soil, and use the tool to plant.
+3. Select the watering can (slot 2) and water the planted soil. Refill the can at a pond.
+4. Watered crops grow when a new day begins. Return to the farmhouse door and press F to sleep.
+5. Harvest mature crops with a seed slot selected, then sell goods at the shipping bin beside the farmhouse.
+6. Collect pasture eggs and milk, gather wood, fish at ponds, buy seeds, and work toward farm restoration goals.
+
+The first field contains sample crops so you can try harvesting immediately. Some progression systems unlock as you explore and gather materials.
+
+## What's included
+
+- Large island farm map with coastline, ponds, paths, fields, village buildings, orchard, and dock
+- Animated player assembled from base, hairstyle, and tool sprite layers
+- Multiple crop types with growth stages, tilling, watering, and harvesting
+- Hotbar, backpack, seed purchasing, gold, health, energy, and watering-can UI
+- Day/night lighting, seasons, sleep transition, and fireflies
+- Roaming farm animals and collectible eggs and milk
+- Fishing, tree chopping, shipping bin, orders, upgrades, and farm restoration progression
+- Main menu, character hairstyle selection, options, credits, and pause menu
+- Synthesized sound effects and ambient farm music (audio availability depends on the computer)
 
 ## Project structure
 
 ```
 Anihan/
-├── src/main/java/anihan/
-│   └── AnihanGame.java
-├── .gitignore
+├── src/
+│   ├── engine/       # Window, game loop, and rendering panel
+│   ├── entities/     # Player and entity logic
+│   ├── farming/      # Soil, crops, inventory progression
+│   ├── inputs/       # Keyboard and mouse input
+│   ├── inventory/    # Hotbar and backpack UI
+│   ├── managers/     # Asset loading and world/tile management
+│   ├── states/       # Menu, gameplay, and pause states
+│   ├── time/         # Day/night clock
+│   └── validation/   # Headless resource smoke test
+├── res/              # Maps, tilesets, sprites, crops, UI and animals
+├── compile.bat
+├── run.bat
 └── README.md
 ```
 
-## Planned next systems
+## Validation
 
-- Multi-directional character sprite sheets and tool animations
-- Larger layered tile maps and forest exploration
-- Historical artifacts, lore journal, and shrine puzzles
-- More crop stages, seasons, weather, pests, and crop protection
-- Tool upgrades, crafting, quests, and order packaging
-- Save/load system and original pixel-art/audio assets
+A GitHub Actions workflow compiles the Java source on pushes and pull requests to `main`, then runs a headless smoke test for required game artwork and map resources.
 
-## Project note
+To run the resource smoke test locally after compiling:
 
-The current build is a playable prototype, not the complete game described in the design concept. The folklore and historical elements will be added as exploration and story systems. Historical objects and symbols will be handled with care and contextual research.
+```bat
+java -Djava.awt.headless=true -cp bin validation.AssetSmokeTest
+```
+
+## Notes
+
+This is an actively developed playable prototype, not a finished commercial release. Some included assets are loaded and used by different systems; others are retained in `res/` for future content. The game is designed to run locally and offline after the repository and JDK are installed.
