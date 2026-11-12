@@ -675,7 +675,70 @@ public final class TileManager {
                 }
             }
         }
+        // Give the island a raised, layered shoreline like a classic
+        // colorful farming-adventure map. These edge details are visual only;
+        // collision and farming still use the original tile grid.
+        drawCliffRim(g);
         g.dispose();
+    }
+
+    /**
+     * Draws warm soil/cliff faces along exposed land edges. The small pixel
+     * bands add depth to the coastline without obscuring the grass or paths.
+     */
+    private void drawCliffRim(Graphics2D g) {
+        Color cliffDark = new Color(119, 67, 43);
+        Color cliffMid = new Color(157, 91, 55);
+        Color cliffLight = new Color(190, 124, 73);
+        Color cliffShadow = new Color(91, 57, 43);
+        Color grassLip = new Color(75, 157, 71);
+
+        for (int y = 1; y < mapHeight - 1; y++) {
+            for (int x = 1; x < mapWidth - 1; x++) {
+                int tile = mapTiles[y][x];
+                if (tile == TILE_WATER || tile == TILE_DOCK) continue;
+
+                int dx = x * TILE_SIZE;
+                int dy = y * TILE_SIZE;
+                int seed = Math.floorMod(x * 37 + y * 71 + x * y * 13, 11);
+
+                // The south-facing cliff is the strongest visible edge.
+                if (isWater(x, y + 1)) {
+                    int h = 7 + seed % 4;
+                    g.setColor(cliffDark);
+                    g.fillRect(dx, dy + TILE_SIZE - h, TILE_SIZE, h);
+                    g.setColor(cliffMid);
+                    g.fillRect(dx, dy + TILE_SIZE - h + 2, TILE_SIZE, h - 2);
+                    g.setColor(cliffLight);
+                    for (int px = 3 + seed % 5; px < TILE_SIZE; px += 9) {
+                        int mark = 2 + Math.floorMod(px + seed, 4);
+                        g.fillRect(dx + px, dy + TILE_SIZE - h + mark, 3, 2);
+                    }
+                    g.setColor(cliffShadow);
+                    g.drawLine(dx, dy + TILE_SIZE - 1, dx + TILE_SIZE - 1, dy + TILE_SIZE - 1);
+                    g.setColor(grassLip);
+                    g.drawLine(dx, dy + TILE_SIZE - h, dx + TILE_SIZE - 1, dy + TILE_SIZE - h);
+                }
+
+                // Short side faces break up long straight coastlines.
+                if (isWater(x - 1, y)) {
+                    g.setColor(cliffDark);
+                    g.fillRect(dx, dy + 5, 5, 23);
+                    g.setColor(cliffMid);
+                    g.fillRect(dx + 1, dy + 7, 3, 18);
+                    g.setColor(cliffLight);
+                    g.fillRect(dx + 2, dy + 10 + seed % 5, 2, 3);
+                }
+                if (isWater(x + 1, y)) {
+                    g.setColor(cliffDark);
+                    g.fillRect(dx + TILE_SIZE - 5, dy + 5, 5, 23);
+                    g.setColor(cliffMid);
+                    g.fillRect(dx + TILE_SIZE - 4, dy + 7, 3, 18);
+                    g.setColor(cliffLight);
+                    g.fillRect(dx + TILE_SIZE - 4, dy + 12 + seed % 5, 2, 3);
+                }
+            }
+        }
     }
 
     private void drawWaterTile(Graphics2D g, BufferedImage sheet, int x, int y, int dx, int dy) {
