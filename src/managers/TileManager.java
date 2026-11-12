@@ -369,7 +369,7 @@ public final class TileManager {
         plantGrove(50, 43, 5, 4, 0.52f, rng);
 
         // Scattered inland trees.
-        for (int i = 0; i < 260; i++) {
+        for (int i = 0; i < 390; i++) {
             int x = 5 + rng.nextInt(mapWidth - 10);
             int y = 5 + rng.nextInt(mapHeight - 10);
             if (mapTiles[y][x] != TILE_GRASS || reserved[y][x]) continue;
@@ -379,7 +379,7 @@ public final class TileManager {
         }
 
         // Flower patches across open grass.
-        for (int i = 0; i < 620; i++) {
+        for (int i = 0; i < 1_050; i++) {
             int x = rng.nextInt(mapWidth);
             int y = rng.nextInt(mapHeight);
             if (mapTiles[y][x] == TILE_GRASS && !reserved[y][x] && rng.nextFloat() < 0.24f) {
@@ -930,7 +930,7 @@ public final class TileManager {
         };
         String[] mushroomKinds = {"mushroom", "mushroom_blue", "mushroom_blue2", "mushroom_blue3"};
         Random propRng = new Random(9_137L);
-        for (int i = 0; i < 240; i++) {
+        for (int i = 0; i < 420; i++) {
             int x = 3 + propRng.nextInt(mapWidth - 6);
             int y = 3 + propRng.nextInt(mapHeight - 6);
             if (mapTiles[y][x] != TILE_GRASS || reserved[y][x] || isNearPath(x, y, 1)) continue;
