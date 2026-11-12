@@ -1,41 +1,79 @@
 # Anihan
 
-A Java-based farming game project inspired by Filipino rural life and farming culture.
+**Anihan** is a 2D Filipino farming adventure built with Java Swing, AWT, and Graphics2D.
 
-## Project status
+This repository now contains a small playable foundation. It is intentionally dependency-free so it can be opened and run in VS Code or Eclipse with a JDK.
 
-Early development. This repository is the starting point for the project.
+## Playable prototype
 
-## Planned direction
+- Top-down movement with WASD or arrow keys
+- Pixel-art-inspired farm tiles, trees, a bahay kubo, and a palengke stall
+- Till soil, plant crops, water them, and harvest mature produce
+- Four crops: palay, ube, kamote, and pineapple
+- A day/night cycle with a night-time color overlay
+- Sell harvested goods at the palengke
+- Simple inventory, crop growth, and on-screen controls
 
-- Farming gameplay: plant, grow, harvest, and sell crops.
-- Filipino-inspired setting, characters, and farm details.
-- Inventory and item management.
-- NPC interactions and a simple in-game economy.
-- Object-oriented design and data structures where they fit the gameplay systems.
+## Requirements
 
-## Technology
+- JDK 17 or newer
+- No external libraries or game engine required
 
-- Language: Java
-- IDE: Visual Studio Code or Eclipse
-- Game framework / rendering: To be selected
+## Run in VS Code
 
-## Getting started
-
-1. Install a JDK compatible with the project once its Java version is selected.
+1. Install a JDK 17+ and the Java extensions for VS Code.
 2. Clone the repository:
 
    ```bash
    git clone https://github.com/lawfet/Anihan.git
+   cd Anihan
    ```
 
-3. Open the cloned `Anihan` folder in your IDE.
-4. The source code and build instructions will be added as the project structure is established.
+3. Open the folder in VS Code.
+4. Open `src/main/java/anihan/AnihanGame.java`.
+5. Run the `AnihanGame` class using **Run Java**.
 
-## Development notes
+You can also run it from a terminal:
 
-Keep source code, assets, and documentation organized in separate folders. Update this README as the game systems and build setup become available.
+```bash
+javac -d out src/main/java/anihan/AnihanGame.java
+java -cp out anihan.AnihanGame
+```
 
-## License
+## Controls
 
-No license has been selected yet. All rights reserved unless a license is added to this repository.
+| Key | Action |
+|---|---|
+| WASD / Arrow keys | Move |
+| Space | Till nearby grass |
+| Q | Plant selected seed |
+| R | Water nearby planted crop |
+| E | Harvest mature crop / sell at market |
+| 1–4 | Select seed |
+| I | Toggle inventory panel |
+| H | Sleep and begin the next day |
+
+Stand next to a tile to work on it. Stand beside the palengke stall and press **E** to sell all harvested goods.
+
+## Project structure
+
+```
+Anihan/
+├── src/main/java/anihan/
+│   └── AnihanGame.java
+├── .gitignore
+└── README.md
+```
+
+## Planned next systems
+
+- Multi-directional character sprite sheets and tool animations
+- Larger layered tile maps and forest exploration
+- Historical artifacts, lore journal, and shrine puzzles
+- More crop stages, seasons, weather, pests, and crop protection
+- Tool upgrades, crafting, quests, and order packaging
+- Save/load system and original pixel-art/audio assets
+
+## Project note
+
+The current build is a playable prototype, not the complete game described in the design concept. The folklore and historical elements will be added as exploration and story systems. Historical objects and symbols will be handled with care and contextual research.
