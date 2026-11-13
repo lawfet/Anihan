@@ -1266,8 +1266,12 @@ public final class TileManager {
             int bottomY = (placement.tileY + 1) * TILE_SIZE;
             int depth = bottomY + layerOffset;
             if ("ANIM".equals(placement.kind)) {
-                addAnimated(assetManager.getSceneryFrames(asset), centerX, bottomY, depth,
+                BufferedImage[] frames = assetManager.getSceneryFrames(asset);
+                addAnimated(frames, centerX, bottomY, depth,
                         placement.tileX + placement.tileY, placement.scale);
+                if (placement.solid && frames != null && frames.length > 0) {
+                    markBuildingSolid(frames[0], centerX, bottomY, placement.scale);
+                }
             } else {
                 BufferedImage image = assetManager.getResourceImage(asset);
                 if (image == null) {
