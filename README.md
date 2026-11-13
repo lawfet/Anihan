@@ -17,7 +17,7 @@
    run.bat
    ```
 
-The script compiles the game into `bin/` and launches `engine.Main`. You can also compile without launching by running `compile.bat`.
+The script compiles the game into `bin/` and launches `engine.Game`. You can also compile without launching by running `compile.bat`.
 
 ### Run from the VS Code terminal
 From the repository root:
@@ -25,10 +25,10 @@ From the repository root:
 ```bat
 if not exist bin mkdir bin
 javac -Xlint:all -d bin src\engine\*.java src\managers\*.java src\states\*.java src\entities\*.java src\farming\*.java src\time\*.java src\inventory\*.java src\inputs\*.java src\validation\*.java
-java -cp bin engine.Main
+java -cp bin engine.Game
 ```
 
-Keep the `res/` directory beside `bin/`. The game loads its maps, sprites, crops, UI, and animal artwork from this resource folder.
+Keep the `res/` directory beside `bin/`. The game indexes every PNG under this resource folder at startup. Player animation variants, crop stages, building sprites, scenery, animals, and UI artwork are loaded by their respective systems. Damaged optional PNGs are reported and skipped instead of stopping the entire game. Keep the res/ directory beside bin/.
 
 ## Controls
 
@@ -58,7 +58,7 @@ The first field contains sample crops so you can try harvesting immediately. Som
 
 ## What's included
 
-- Large island farm map with coastline, ponds, paths, fields, village buildings, orchard, and dock
+- Connected archipelago world with automatically generated, walkable timber bridges, coastline, ponds, paths, fields, village buildings, orchard, and docks
 - Animated player assembled from base, hairstyle, and tool sprite layers
 - Multiple crop types with growth stages, tilling, watering, and harvesting
 - Hotbar, backpack, seed purchasing, gold, health, energy, and watering-can UI
@@ -73,7 +73,7 @@ The first field contains sample crops so you can try harvesting immediately. Som
 ```
 Anihan/
 ├── src/
-│   ├── engine/       # Window, game loop, and rendering panel
+│   ├── engine/       # Game, GameWindow, GameState, game loop, and rendering panel
 │   ├── entities/     # Player and entity logic
 │   ├── farming/      # Soil, crops, inventory progression
 │   ├── inputs/       # Keyboard and mouse input
