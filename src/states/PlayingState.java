@@ -314,9 +314,7 @@ public class PlayingState extends State {
         g.setFont(new Font("SansSerif", Font.BOLD, 13));
         g.setColor(new Color(255, 240, 210));
         g.drawString("ANIHAN WORLD  |  " + tileM.getMapWidth() + " x " + tileM.getMapHeight() + " tiles  |  M to close", x, y + mapH + 25);
-        g.drawString("Home & Farm", x + 90, y + 40);
-        g.drawString("East Village", x + mapW * 2 / 3, y + mapH / 3);
-        g.drawString("Southern Fields", x + mapW / 3, y + mapH * 2 / 3);
+        g.drawString("Explore the islands using the timber bridges", x, y + mapH + 43);
     }
 
     private void renderPrompt(Graphics2D g2, int screenW) {
