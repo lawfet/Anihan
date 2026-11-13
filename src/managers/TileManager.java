@@ -194,13 +194,11 @@ public final class TileManager {
             int roadY = 24 + (int) Math.round(1.5 * Math.sin((x - 6) * 0.14)
                     + 0.7 * Math.sin((x - 2) * 0.05));
             setIfLand(x, roadY, TILE_DIRT);
-            setIfLand(x, roadY + 1, TILE_DIRT);
         }
 
         // North-south spine through the farm and village.
         for (int y = 7; y < mapHeight - 4; y++) {
             setIfLand(37, y, TILE_DIRT);
-            setIfLand(38, y, TILE_DIRT);
         }
 
         // Farm driveway, field gate, and short branch roads.
@@ -212,8 +210,9 @@ public final class TileManager {
         carveRoad(24, 26, 24, 31);
 
         // Village market square, cottage lane and connecting footpaths.
-        fillDirtRect(43, 23, 59, 29);
-        fillDirtRect(43, 35, 66, 36);
+        // Compact market square and a single-tile village lane.
+        fillDirtRect(46, 24, 55, 27);
+        fillDirtRect(43, 35, 66, 35);
         carveRoad(47, 26, 47, 36);
         carveRoad(52, 26, 52, 36);
         carveRoad(58, 29, 58, 36);
@@ -448,13 +447,13 @@ public final class TileManager {
      * east/west channel separates the northern village from southern coves.
      */
     private void carveChannels() {
-        // East-west sea channel. Vary the centerline so it feels like a river
-        // mouth, not a ruler-straight trench. Five tiles wide at its broadest.
+        // Meandering east-west sea channel. The changing width creates bays
+        // and narrow passages instead of one perfectly uniform cross-cut.
         for (int x = 5; x < mapWidth - 5; x++) {
-            double wave = Math.sin(x * 0.061) * 4.0
-                    + Math.sin(x * 0.137 + 0.8) * 1.8;
-            int centerY = 58 + (int) Math.round(wave);
-            int halfWidth = 2 + (int) Math.round((1.0 + Math.sin(x * 0.09)) * 0.5);
+            double wave = Math.sin(x * 0.061) * 5.0
+                    + Math.sin(x * 0.137 + 0.8) * 2.2;
+            int centerY = 57 + (int) Math.round(wave);
+            int halfWidth = 2 + (int) Math.round((1.0 + Math.sin(x * 0.09)) * 1.0);
             for (int y = centerY - halfWidth; y <= centerY + halfWidth; y++) {
                 if (x > 1 && y > 1 && x < mapWidth - 2 && y < mapHeight - 2) {
                     mapTiles[y][x] = TILE_WATER;
@@ -462,12 +461,13 @@ public final class TileManager {
             }
         }
 
-        // North-south channel, bending gently toward the east near the south.
+        // North-south channel bends independently, opening wider coves at
+        // alternating points along the eastern and western shorelines.
         for (int y = 5; y < mapHeight - 5; y++) {
-            double wave = Math.sin(y * 0.073 + 0.4) * 3.4
-                    + Math.sin(y * 0.151) * 1.4;
+            double wave = Math.sin(y * 0.073 + 0.4) * 4.2
+                    + Math.sin(y * 0.151) * 1.8;
             int centerX = 91 + (int) Math.round(wave);
-            int halfWidth = 2 + (int) Math.round((1.0 + Math.sin(y * 0.11 + 1.0)) * 0.5);
+            int halfWidth = 2 + (int) Math.round((1.0 + Math.sin(y * 0.11 + 1.0)) * 0.8);
             for (int x = centerX - halfWidth; x <= centerX + halfWidth; x++) {
                 if (x > 1 && y > 1 && x < mapWidth - 2 && y < mapHeight - 2) {
                     mapTiles[y][x] = TILE_WATER;
@@ -651,7 +651,6 @@ public final class TileManager {
             int x = Math.round(x0 + (x1 - x0) * t);
             int y = Math.round(y0 + (y1 - y0) * t);
             setIfLand(x, y, TILE_DIRT);
-            setIfLand(x + 1, y, TILE_DIRT);
         }
     }
 
