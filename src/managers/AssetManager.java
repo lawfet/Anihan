@@ -23,6 +23,7 @@ public class AssetManager {
     // Res path root
     private final String resRoot;
     private final Map<String, BufferedImage> resourceImages = new java.util.TreeMap<>();
+    private final java.util.List<String> brokenResources = new java.util.ArrayList<>();
 
     // Player animation strips
     // [action][frame]
@@ -175,7 +176,12 @@ public class AssetManager {
                     .filter(path -> path.toString().toLowerCase(java.util.Locale.ROOT).endsWith(".png"))
                     .sorted().forEach(path -> {
                         String key = root.relativize(path).toString().replace('\\', '/');
-                        resourceImages.put(key, loadImage(key));
+                        BufferedImage image = tryLoadImage(key);
+                        if (image != null) {
+                            resourceImages.put(key, image);
+                        } else {
+                            brokenResources.add(key);
+                        }
                     });
         } catch (IOException exception) {
             throw new IllegalStateException("Cannot index game artwork", exception);
@@ -184,6 +190,10 @@ public class AssetManager {
 
     public java.util.List<String> getResourceNames() {
         return java.util.List.copyOf(resourceImages.keySet());
+    }
+
+    public java.util.List<String> getBrokenResourceNames() {
+        return java.util.List.copyOf(brokenResources);
     }
 
     public BufferedImage getResourceImage(String name) { return resourceImages.get(name); }
