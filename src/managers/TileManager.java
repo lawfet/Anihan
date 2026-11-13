@@ -49,6 +49,19 @@ public final class TileManager {
     private BufferedImage ground;
     private final List<Scenery> objects = new ArrayList<>();
 
+    // Additional scenery is declared in res/maps/farm_map.txt. Coordinates
+    // are tile coordinates; the sprite is anchored at the bottom center.
+    private static final class LayoutSprite {
+        final String kind, asset;
+        final int tileX, tileY, scale;
+        final boolean solid;
+        LayoutSprite(String kind, String asset, int tileX, int tileY, int scale, boolean solid) {
+            this.kind = kind; this.asset = asset; this.tileX = tileX; this.tileY = tileY;
+            this.scale = scale; this.solid = solid;
+        }
+    }
+    private final List<LayoutSprite> layoutSprites = new ArrayList<>();
+
     // Village buildings, each anchored by the center of its bottom edge.
     // Every sprite here is complete artwork (no cropped wall/roof fragments).
     private static final BuildingSpec[] BUILDINGS = {
@@ -404,18 +417,51 @@ public final class TileManager {
     }
 
     private void loadLandLayout() {
-        try (java.util.Scanner layout = new java.util.Scanner(assetManager.openResource("maps/farm_map.txt"))) {
-            layout.useLocale(java.util.Locale.ROOT);
-            mapWidth = layout.nextInt();
-            mapHeight = layout.nextInt();
+        layoutSprites.clear();
+        try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                new java.io.InputStreamReader(assetManager.openResource("maps/farm_map.txt"),
+                        java.nio.charset.StandardCharsets.UTF_8))) {
+            String header = reader.readLine();
+            if (header == null) throw new IllegalArgumentException("Map file is empty");
+            String[] dimensions = header.trim().split("\\s+");
+            mapWidth = Integer.parseInt(dimensions[0]);
+            mapHeight = Integer.parseInt(dimensions[1]);
             if (mapWidth < 80 || mapHeight < 56 || mapWidth > 512 || mapHeight > 512) {
                 throw new IllegalArgumentException("Map dimensions must be between 80x56 and 512x512");
             }
             mapTiles = new int[mapHeight][mapWidth];
             for (int[] row : mapTiles) java.util.Arrays.fill(row, TILE_WATER);
-            while (layout.hasNext()) {
-                double cx = layout.nextDouble(), cy = layout.nextDouble();
-                double rx = layout.nextDouble(), ry = layout.nextDouble(), power = layout.nextDouble();
+
+            String line;
+            int lineNumber = 1;
+            while ((line = reader.readLine()) != null) {
+                lineNumber++;
+                line = line.split("#", 2)[0].trim();
+                if (line.isEmpty()) continue;
+                String[] parts = line.split("\\s+");
+                if ("SPRITE".equalsIgnoreCase(parts[0]) || "ANIM".equalsIgnoreCase(parts[0])) {
+                    if (parts.length != 7) {
+                        throw new IllegalArgumentException("Expected: SPRITE/ANIM asset tileX tileY scale solid");
+                    }
+                    String kind = parts[0].toUpperCase(java.util.Locale.ROOT);
+                    String asset = parts[1];
+                    int x = Integer.parseInt(parts[2]), y = Integer.parseInt(parts[3]);
+                    int scale = Integer.parseInt(parts[4]);
+                    boolean solid = Boolean.parseBoolean(parts[5]);
+                    // A final layer offset keeps the text format explicit and editable.
+                    int layer = Integer.parseInt(parts[6]);
+                    if (scale < 1 || scale > 8 || x < 0 || y < 0 || x >= mapWidth || y >= mapHeight) {
+                        throw new IllegalArgumentException("Invalid sprite placement");
+                    }
+                    layoutSprites.add(new LayoutSprite(kind, asset + "|" + layer, x, y, scale, solid));
+                    continue;
+                }
+                if (parts.length != 5) {
+                    throw new IllegalArgumentException("Expected land shape: centerX centerY radiusX radiusY power");
+                }
+                double cx = Double.parseDouble(parts[0]), cy = Double.parseDouble(parts[1]);
+                double rx = Double.parseDouble(parts[2]), ry = Double.parseDouble(parts[3]);
+                double power = Double.parseDouble(parts[4]);
                 if (rx <= 0 || ry <= 0 || power <= 0) throw new IllegalArgumentException("Invalid land shape");
                 for (int y = 1; y < mapHeight - 1; y++) {
                     for (int x = 1; x < mapWidth - 1; x++) {
@@ -431,8 +477,10 @@ public final class TileManager {
                     }
                 }
             }
-        } catch (java.io.IOException | java.util.NoSuchElementException exception) {
+        } catch (java.io.IOException exception) {
             throw new IllegalStateException("Cannot read maps/farm_map.txt", exception);
+        } catch (RuntimeException exception) {
+            throw new IllegalStateException("Invalid maps/farm_map.txt: " + exception.getMessage(), exception);
         }
     }
 
@@ -1205,6 +1253,29 @@ public final class TileManager {
                 addObject(bushes[propRng.nextInt(bushes.length)], x * TILE_SIZE + 16, bottom, bottom - 1, 2);
             } else if (!nearTree && roll < 0.17f) {
                 addObject(rocks[propRng.nextInt(rocks.length)], x * TILE_SIZE + 16, bottom, bottom - 2, 2);
+            }
+        }
+
+        // TXT-authored sprites are loaded from the resource catalog. This
+        // makes the map file the source of truth for these scenery placements.
+        for (LayoutSprite placement : layoutSprites) {
+            String[] assetAndLayer = placement.asset.split("\\|", 2);
+            String asset = assetAndLayer[0];
+            int layerOffset = Integer.parseInt(assetAndLayer[1]);
+            int centerX = placement.tileX * TILE_SIZE + TILE_SIZE / 2;
+            int bottomY = (placement.tileY + 1) * TILE_SIZE;
+            int depth = bottomY + layerOffset;
+            if ("ANIM".equals(placement.kind)) {
+                addAnimated(assetManager.getSceneryFrames(asset), centerX, bottomY, depth,
+                        placement.tileX + placement.tileY, placement.scale);
+            } else {
+                BufferedImage image = assetManager.getResourceImage(asset);
+                if (image == null) {
+                    System.err.println("[Map] Missing or unreadable sprite: " + asset);
+                    continue;
+                }
+                addObject(image, centerX, bottomY, depth, placement.scale);
+                if (placement.solid) markBuildingSolid(image, centerX, bottomY, placement.scale);
             }
         }
 
