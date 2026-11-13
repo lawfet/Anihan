@@ -480,6 +480,14 @@ public final class TileManager {
         carveEllipse(145, 16, 5, 5, TILE_WATER);
         carveEllipse(145, 101, 6, 5, TILE_WATER);
         carveEllipse(71, 7, 5, 3, TILE_WATER);
+
+        // Additional sheltered inlets break up the large shores into smaller
+        // coves, peninsulas and footbridge approaches like the reference map.
+        carveEllipse(25, 50, 5, 9, TILE_WATER);
+        carveEllipse(74, 52, 7, 5, TILE_WATER);
+        carveEllipse(139, 57, 6, 9, TILE_WATER);
+        carveEllipse(83, 88, 5, 6, TILE_WATER);
+        carveEllipse(18, 86, 4, 6, TILE_WATER);
     }
 
     /**
