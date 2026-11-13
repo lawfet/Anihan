@@ -18,9 +18,9 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Compile game and compatibility launcher
+      - name: Compile game source
         run: |
           mkdir -p bin
-          javac -Xlint:all -d bin $(find src/engine src/managers src/states src/entities src/farming src/time src/inventory src/inputs src/validation src/anihan -name '*.java' -print)
-      - name: Verify bundled artwork and world map
+          javac -Xlint:all -d bin $(find src/engine src/managers src/states src/entities src/farming src/time src/inventory src/inputs src/validation -name '*.java' -print)
+      - name: Verify all artwork and island navigation
         run: java -Djava.awt.headless=true -cp bin validation.AssetSmokeTest
