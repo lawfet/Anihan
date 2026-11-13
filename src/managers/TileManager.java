@@ -1548,6 +1548,54 @@ public final class TileManager {
         return tile == TILE_DIRT || tile == TILE_HOUSE_DOOR;
     }
 
+    /** Number of separate land regions after bridge generation. */
+    public int getLandRegionCount() {
+        int[][] labels = labelLandComponents();
+        int count = 0;
+        for (int[] row : labels) {
+            for (int label : row) count = Math.max(count, label);
+        }
+        return count;
+    }
+
+    /**
+     * Checks that every generated land region can be reached from the farm
+     * spawn using non-solid tiles, not merely shown on the map overview.
+     */
+    public boolean canReachEveryLandRegionFrom(int startTileX, int startTileY) {
+        if (startTileX < 0 || startTileY < 0 || startTileX >= mapWidth || startTileY >= mapHeight) return false;
+        if (isSolid(startTileX * TILE_SIZE + TILE_SIZE / 2, startTileY * TILE_SIZE + TILE_SIZE / 2)) return false;
+
+        int[][] labels = labelLandComponents();
+        int regionCount = getLandRegionCount();
+        boolean[] reachedRegions = new boolean[regionCount + 1];
+        boolean[][] visited = new boolean[mapHeight][mapWidth];
+        java.util.ArrayDeque<Integer> queue = new java.util.ArrayDeque<>();
+        visited[startTileY][startTileX] = true;
+        queue.add(startTileY * mapWidth + startTileX);
+
+        while (!queue.isEmpty()) {
+            int current = queue.removeFirst();
+            int x = current % mapWidth;
+            int y = current / mapWidth;
+            if (labels[y][x] > 0) reachedRegions[labels[y][x]] = true;
+            int[] dx = {1, -1, 0, 0};
+            int[] dy = {0, 0, 1, -1};
+            for (int d = 0; d < 4; d++) {
+                int nx = x + dx[d], ny = y + dy[d];
+                if (nx < 0 || ny < 0 || nx >= mapWidth || ny >= mapHeight || visited[ny][nx]) continue;
+                if (isSolid(nx * TILE_SIZE + TILE_SIZE / 2, ny * TILE_SIZE + TILE_SIZE / 2)) continue;
+                visited[ny][nx] = true;
+                queue.addLast(ny * mapWidth + nx);
+            }
+        }
+
+        for (int region = 1; region <= regionCount; region++) {
+            if (!reachedRegions[region]) return false;
+        }
+        return true;
+    }
+
     public int getMapWidth() { return mapWidth; }
     public int getMapHeight() { return mapHeight; }
 }
