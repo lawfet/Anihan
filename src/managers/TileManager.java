@@ -237,6 +237,11 @@ public final class TileManager {
 
         carvePond(126, 88, 9, 6);
         carvePond(76, 84, 6, 4);
+
+        // Build real, walkable links between every separated landmass.
+        // This must happen after all large channels and ponds are carved.
+        connectAllLandmasses();
+
         carveRoad(96, 24, 96, 71);
         carveRoad(37, 70, 123, 70);
         carveRoad(123, 70, 123, 77);
@@ -335,9 +340,6 @@ public final class TileManager {
         reserveRect(26, 12, 34, 18); // farmhouse apron
         reserveRect(43, 21, 55, 27); // plaza
         reserveRect(53, 7, 64, 16);  // orchard
-
-        // Timber bridges reconnect the island districts across the canals.
-        buildCanalBridges();
 
         // A little wooden dock on the south shore.
         buildDock();
@@ -481,39 +483,139 @@ public final class TileManager {
     }
 
     /**
-     * Walkable timber crossings at the natural road intersections.
-     * Horizontal bridges cross the north/south channel; vertical bridges
-     * cross the east/west channel.
+     * Finds each disconnected land region and joins it to the nearest region
+     * with a three-tile-wide timber bridge. The search uses the actual carved
+     * coastline, so bridge endpoints always touch walkable land.
      */
-    private void buildCanalBridges() {
-        // Cross the north/south canal on the main north-south/east-west roads.
-        int[] verticalCanalCrossings = {24, 41, 70, 78};
-        for (int bridgeY : verticalCanalCrossings) {
-            int centerX = 91 + (int) Math.round(
-                    Math.sin(bridgeY * 0.073 + 0.4) * 3.4
-                    + Math.sin(bridgeY * 0.151) * 1.4);
-            for (int x = centerX - 4; x <= centerX + 4; x++) {
-                for (int y = bridgeY - 1; y <= bridgeY + 1; y++) {
-                    if (x >= 0 && y >= 0 && x < mapWidth && y < mapHeight) {
-                        mapTiles[y][x] = TILE_DOCK;
+    private void connectAllLandmasses() {
+        int totalTiles = mapWidth * mapHeight;
+        while (true) {
+            int[][] component = labelLandComponents();
+            int componentCount = 0;
+            for (int[] row : component) {
+                for (int value : row) componentCount = Math.max(componentCount, value);
+            }
+            if (componentCount <= 1) return;
+
+            int[] bestPath = null;
+            for (int source = 1; source <= componentCount; source++) {
+                int[] previous = new int[totalTiles];
+                java.util.Arrays.fill(previous, -2);
+                java.util.ArrayDeque<Integer> queue = new java.util.ArrayDeque<>();
+
+                for (int y = 0; y < mapHeight; y++) {
+                    for (int x = 0; x < mapWidth; x++) {
+                        if (component[y][x] == source) {
+                            int index = y * mapWidth + x;
+                            previous[index] = -1;
+                            queue.addLast(index);
+                        }
+                    }
+                }
+
+                int target = -1;
+                while (!queue.isEmpty() && target < 0) {
+                    int current = queue.removeFirst();
+                    int x = current % mapWidth;
+                    int y = current / mapWidth;
+                    int[] dx = {1, -1, 0, 0};
+                    int[] dy = {0, 0, 1, -1};
+                    for (int direction = 0; direction < 4; direction++) {
+                        int nx = x + dx[direction];
+                        int ny = y + dy[direction];
+                        if (nx < 0 || ny < 0 || nx >= mapWidth || ny >= mapHeight) continue;
+                        int next = ny * mapWidth + nx;
+                        if (previous[next] != -2) continue;
+                        if (component[ny][nx] != 0 && component[ny][nx] != source) {
+                            previous[next] = current;
+                            target = next;
+                            break;
+                        }
+                        previous[next] = current;
+                        queue.addLast(next);
+                    }
+                }
+
+                if (target >= 0) {
+                    java.util.ArrayList<Integer> reversed = new java.util.ArrayList<>();
+                    int cursor = target;
+                    while (cursor >= 0) {
+                        reversed.add(cursor);
+                        cursor = previous[cursor];
+                    }
+                    int[] path = new int[reversed.size()];
+                    for (int i = 0; i < reversed.size(); i++) {
+                        path[i] = reversed.get(reversed.size() - 1 - i);
+                    }
+                    if (bestPath == null || path.length < bestPath.length) bestPath = path;
+                }
+            }
+
+            if (bestPath == null) {
+                throw new IllegalStateException("Unable to connect all Anihan island regions.");
+            }
+            placeBridgeAlong(bestPath);
+        }
+    }
+
+    /** Labels grass, paths, trees and docks as land; water remains unwalkable. */
+    private int[][] labelLandComponents() {
+        int[][] labels = new int[mapHeight][mapWidth];
+        int nextLabel = 0;
+        java.util.ArrayDeque<Integer> queue = new java.util.ArrayDeque<>();
+        for (int y = 0; y < mapHeight; y++) {
+            for (int x = 0; x < mapWidth; x++) {
+                if (mapTiles[y][x] == TILE_WATER || labels[y][x] != 0) continue;
+                nextLabel++;
+                labels[y][x] = nextLabel;
+                queue.add(y * mapWidth + x);
+                while (!queue.isEmpty()) {
+                    int current = queue.removeFirst();
+                    int cx = current % mapWidth;
+                    int cy = current / mapWidth;
+                    int[] dx = {1, -1, 0, 0};
+                    int[] dy = {0, 0, 1, -1};
+                    for (int d = 0; d < 4; d++) {
+                        int nx = cx + dx[d], ny = cy + dy[d];
+                        if (nx < 0 || ny < 0 || nx >= mapWidth || ny >= mapHeight) continue;
+                        if (labels[ny][nx] != 0 || mapTiles[ny][nx] == TILE_WATER) continue;
+                        labels[ny][nx] = nextLabel;
+                        queue.addLast(ny * mapWidth + nx);
                     }
                 }
             }
         }
+        return labels;
+    }
 
-        // Cross the east/west canal at the farm road and southern causeways.
-        int[] horizontalCanalCrossings = {37, 55, 123};
-        for (int bridgeX : horizontalCanalCrossings) {
-            double wave = Math.sin(bridgeX * 0.061) * 4.0
-                    + Math.sin(bridgeX * 0.137 + 0.8) * 1.8;
-            int centerY = 58 + (int) Math.round(wave);
-            for (int y = centerY - 4; y <= centerY + 4; y++) {
-                for (int x = bridgeX - 1; x <= bridgeX + 1; x++) {
-                    if (x >= 0 && y >= 0 && x < mapWidth && y < mapHeight) {
-                        mapTiles[y][x] = TILE_DOCK;
-                    }
-                }
+    /** Paints only water cells along the shortest land-to-land route. */
+    private void placeBridgeAlong(int[] path) {
+        for (int i = 0; i < path.length; i++) {
+            int current = path[i];
+            int x = current % mapWidth;
+            int y = current / mapWidth;
+            if (mapTiles[y][x] == TILE_WATER) mapTiles[y][x] = TILE_DOCK;
+
+            int before = path[Math.max(0, i - 1)];
+            int after = path[Math.min(path.length - 1, i + 1)];
+            int dx = (after % mapWidth) - (before % mapWidth);
+            int dy = (after / mapWidth) - (before / mapWidth);
+
+            // Widen across the bridge, not along it. Only water becomes planks.
+            if (Math.abs(dx) >= Math.abs(dy)) {
+                markDockIfWater(x, y - 1);
+                markDockIfWater(x, y + 1);
+            } else {
+                markDockIfWater(x - 1, y);
+                markDockIfWater(x + 1, y);
             }
+        }
+    }
+
+    private void markDockIfWater(int x, int y) {
+        if (x >= 0 && y >= 0 && x < mapWidth && y < mapHeight
+                && mapTiles[y][x] == TILE_WATER) {
+            mapTiles[y][x] = TILE_DOCK;
         }
     }
 
