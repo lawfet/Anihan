@@ -13,3 +13,22 @@
 15.0 84.0 7.0 8.0 2.15
 78.0 101.0 9.0 6.0 2.10
 146.0 65.0 7.0 9.0 2.15
+
+# TXT scenery format:
+# SPRITE resource/path.png tileX tileY scale solid layerOffset
+# ANIM scenery-name tileX tileY scale solid layerOffset
+# Coordinates are tile coordinates; sprites are bottom-center anchored.
+SPRITE sprites/buildings/bush_green.png 18 25 2 false 0
+SPRITE sprites/buildings/bush_berry_red.png 22 27 2 false 0
+SPRITE sprites/buildings/bush_berry_orange.png 26 24 2 false 0
+SPRITE sprites/buildings/rock_big.png 14 39 2 false 0
+SPRITE sprites/buildings/rock_med.png 19 42 2 false 0
+SPRITE sprites/buildings/wood_pile.png 72 34 2 false 0
+SPRITE sprites/buildings/crate_small.png 78 38 2 false 0
+SPRITE sprites/buildings/crate_tall.png 82 38 2 false 0
+SPRITE sprites/other/spr_deco_coracle_land.png 11 73 2 false 0
+ANIM tree 30 47 2 true 0
+ANIM pine 35 52 2 true 0
+ANIM tree 72 18 2 true 0
+ANIM pine 78 22 2 true 0
+ANIM tree 132 74 2 true 0
