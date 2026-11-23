@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * AssetManager loads, parses, and provides textures, sprite animations,
@@ -410,11 +411,11 @@ public class AssetManager {
                 sfxCoin = createArpeggioClip(new int[]{988, 1319}, 80, 0.35f);
                 sfxRooster = createToneSlideClip(350, 700, 350, 0.45f);
 
-                // Synthesize ambient farm BGM loop
-                bgmClip = createFarmBgmClip();
+                // Synthesize gentle ambient nature sounds (wind, crickets, birds)
+                bgmClip = createAmbientNatureClip();
                 if (bgmClip != null) {
                     bgmClip.loop(Clip.LOOP_CONTINUOUSLY);
-                    setVolume(bgmClip, musicVolume * masterVolume);
+                    setVolume(bgmClip, musicVolume * masterVolume * 0.3f); // Lower volume for ambient
                 }
             } catch (Throwable t) {
                 // Audio unavailable or headless environment
@@ -552,33 +553,110 @@ public class AssetManager {
         return getClipFromBytes(buffer, sampleRate);
     }
 
-    private Clip createFarmBgmClip() throws Exception {
-        // Peaceful acoustic chord progression (C - G - Am - F) in 44100Hz
-        int sampleRate = 22050; // Use 22kHz to keep buffer compact and smooth
-        int[] chords = {
-            261, 329, 392, 523, // C major
-            246, 293, 392, 493, // G major
-            220, 261, 329, 440, // A minor
-            220, 261, 349, 440  // F major
-        };
-        int noteMs = 280;
-        int totalNotes = chords.length * 2;
-        int totalSamples = (sampleRate * noteMs * totalNotes) / 1000;
+    private Clip createAmbientNatureClip() throws Exception {
+        // Gentle ambient nature soundscape: wind, crickets, distant birds, rustling leaves
+        int sampleRate = 22050;
+        int durationSec = 60; // 1 minute loop
+        int totalSamples = sampleRate * durationSec;
         byte[] buffer = new byte[totalSamples];
-        int noteSamples = (sampleRate * noteMs) / 1000;
+        Random rng = new Random(12345L);
 
-        for (int n = 0; n < totalNotes; n++) {
-            int freq = chords[n % chords.length];
-            for (int i = 0; i < noteSamples; i++) {
-                int index = n * noteSamples + i;
-                if (index >= totalSamples) break;
-                double t = (double) i / sampleRate;
-                // Soft sine wave with warm 2nd harmonic
-                double sample = 0.7 * Math.sin(2.0 * Math.PI * freq * t) + 0.3 * Math.sin(4.0 * Math.PI * freq * t);
-                double env = Math.exp(-3.0 * ((double) i / noteSamples));
-                buffer[index] = (byte) (sample * env * 0.25f * 127);
+        // Pre-generate noise for wind
+        double[] windNoise = new double[totalSamples];
+        for (int i = 0; i < totalSamples; i++) {
+            windNoise[i] = (rng.nextDouble() * 2.0 - 1.0);
+        }
+
+        // Low-pass filter for wind (simple moving average)
+        double[] windFiltered = new double[totalSamples];
+        double alpha = 0.02;
+        windFiltered[0] = windNoise[0];
+        for (int i = 1; i < totalSamples; i++) {
+            windFiltered[i] = alpha * windNoise[i] + (1 - alpha) * windFiltered[i - 1];
+        }
+
+        // Generate cricket chirps (periodic high-frequency clicks)
+        double[] cricketLayer = new double[totalSamples];
+        for (int i = 0; i < totalSamples; i++) {
+            cricketLayer[i] = 0;
+        }
+        // Crickets chirp every 3-8 seconds, more active at "night"
+        for (int baseSample = 0; baseSample < totalSamples; ) {
+            int interval = sampleRate * (3 + rng.nextInt(6)); // 3-8 seconds
+            baseSample += interval;
+            if (baseSample >= totalSamples) break;
+            int chirpDuration = sampleRate / 20; // 50ms chirp
+            for (int i = 0; i < chirpDuration && baseSample + i < totalSamples; i++) {
+                double t = (double) i / chirpDuration;
+                // High frequency sine with envelope
+                cricketLayer[baseSample + i] = Math.sin(2.0 * Math.PI * (5000 + 2000 * Math.sin(t * 10)) * t * 0.001) * Math.exp(-8 * t) * 0.15;
             }
         }
+
+        // Distant bird calls (occasional, melodic)
+        double[] birdLayer = new double[totalSamples];
+        int[] birdNotes = { 880, 988, 1047, 1175, 1319 }; // A5, B5, C6, D6, E6
+        for (int baseSample = sampleRate * 10; baseSample < totalSamples; ) {
+            int interval = sampleRate * (15 + rng.nextInt(30)); // 15-45 seconds
+            baseSample += interval;
+            if (baseSample >= totalSamples) break;
+            int callCount = 1 + rng.nextInt(3);
+            for (int c = 0; c < callCount; c++) {
+                int noteIdx = rng.nextInt(birdNotes.length);
+                int freq = birdNotes[noteIdx];
+                int noteDuration = sampleRate / 3; // ~333ms
+                for (int i = 0; i < noteDuration && baseSample + i < totalSamples; i++) {
+                    double t = (double) i / noteDuration;
+                    birdLayer[baseSample + i] += 0.08 * Math.sin(2.0 * Math.PI * freq * t / sampleRate) * Math.exp(-5 * t) * (1 - t);
+                }
+                baseSample += noteDuration + sampleRate / 10; // gap between notes
+            }
+        }
+
+        // Gentle leaf rustle (broadband noise bursts)
+        double[] rustleLayer = new double[totalSamples];
+        for (int baseSample = sampleRate * 5; baseSample < totalSamples; ) {
+            int interval = sampleRate * (8 + rng.nextInt(20)); // 8-28 seconds
+            baseSample += interval;
+            if (baseSample >= totalSamples) break;
+            int rustleDuration = sampleRate / 4; // 250ms
+            for (int i = 0; i < rustleDuration && baseSample + i < totalSamples; i++) {
+                double t = (double) i / rustleDuration;
+                double noise = (rng.nextDouble() * 2.0 - 1.0);
+                rustleLayer[baseSample + i] += noise * Math.exp(-6 * t) * 0.05;
+            }
+        }
+
+        // Water lapping at shore (very subtle, low frequency)
+        double[] waterLayer = new double[totalSamples];
+        double waterPhase = 0;
+        for (int i = 0; i < totalSamples; i++) {
+            waterPhase += 2.0 * Math.PI * 0.3 / sampleRate; // 0.3 Hz wave
+            waterLayer[i] = Math.sin(waterPhase) * 0.02;
+            // Add occasional gentle splash
+            if (rng.nextDouble() < 0.00002) {
+                for (int j = 0; j < sampleRate / 20 && i + j < totalSamples; j++) {
+                    waterLayer[i + j] += (rng.nextDouble() * 2.0 - 1.0) * Math.exp(-10 * j / (sampleRate / 20.0)) * 0.03;
+                }
+            }
+        }
+
+        // Mix all layers
+        for (int i = 0; i < totalSamples; i++) {
+            double mixed = 0;
+            mixed += windFiltered[i] * 0.12;      // Wind base
+            mixed += cricketLayer[i] * 0.8;        // Crickets
+            mixed += birdLayer[i];                 // Birds
+            mixed += rustleLayer[i];               // Rustle
+            mixed += waterLayer[i];                // Water
+
+            // Soft limiter
+            if (mixed > 0.9) mixed = 0.9 + (mixed - 0.9) * 0.1;
+            if (mixed < -0.9) mixed = -0.9 + (mixed + 0.9) * 0.1;
+
+            buffer[i] = (byte) (mixed * 127);
+        }
+
         return getClipFromBytes(buffer, sampleRate);
     }
 

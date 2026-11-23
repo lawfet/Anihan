@@ -1,34 +1,458 @@
 160 112
-42.0 32.0 36.0 27.0 2.35
-128.0 37.0 26.0 29.0 2.35
-43.0 87.0 27.0 17.0 2.30
-125.0 87.0 26.0 17.0 2.30
-82.0 6.0 10.0 6.0 2.15
-9.0 59.0 6.0 11.0 2.20
-153.0 13.0 5.0 8.0 2.20
-153.0 99.0 5.0 7.0 2.20
-19.0 7.0 7.0 4.0 2.10
-74.0 27.0 12.0 8.0 2.15
-84.0 47.0 8.0 6.0 2.10
-15.0 84.0 7.0 8.0 2.15
-78.0 101.0 9.0 6.0 2.10
-146.0 65.0 7.0 9.0 2.15
+# Anihan Hand-Crafted World Map - 160x112 tiles (5120x3584 px)
+# Land shapes: centerX centerY radiusX radiusY power
+# Designed zones: Farm (SW), Village (Center), Forest (NW), Beach (SE), Mountains (NE)
 
-# TXT scenery format:
-# SPRITE resource/path.png tileX tileY scale solid layerOffset
-# ANIM scenery-name tileX tileY scale solid layerOffset
-# Coordinates are tile coordinates; sprites are bottom-center anchored.
-SPRITE sprites/buildings/bush_green.png 18 25 2 false 0
-SPRITE sprites/buildings/bush_berry_red.png 22 27 2 false 0
-SPRITE sprites/buildings/bush_berry_orange.png 26 24 2 false 0
-SPRITE sprites/buildings/rock_big.png 14 39 2 false 0
-SPRITE sprites/buildings/rock_med.png 19 42 2 false 0
-SPRITE sprites/buildings/wood_pile.png 72 34 2 false 0
-SPRITE sprites/buildings/crate_small.png 78 38 2 false 0
-SPRITE sprites/buildings/crate_tall.png 82 38 2 false 0
-SPRITE sprites/other/spr_deco_coracle_land.png 11 73 2 false 0
-ANIM tree 30 47 2 true 0
-ANIM pine 35 52 2 true 0
-ANIM tree 72 18 2 true 0
-ANIM pine 78 22 2 true 0
-ANIM tree 132 74 2 true 0
+# MAIN ISLAND - Large central landmass with distinct regions
+# Farmstead region (southwest) - player start, crops, animals
+45.0 95.0 35.0 28.0 2.20
+
+# Village square (center) - shops, NPCs, community
+95.0 55.0 28.0 22.0 2.30
+
+# Ancient forest (northwest) - dense trees, foraging, secrets
+28.0 22.0 22.0 28.0 2.40
+
+# Sandy beach & docks (southeast) - fishing, boats, ocean
+135.0 95.0 22.0 18.0 2.15
+
+# Rocky mountains (northeast) - mining, caves, high ground
+128.0 22.0 26.0 22.0 2.50
+
+# RIVER - Winds through the island connecting zones
+# River mouth at beach
+130.0 85.0 4.0 18.0 1.80
+# River bend toward village
+115.0 72.0 4.0 12.0 1.80
+# Through village
+100.0 60.0 5.0 8.0 1.70
+# Toward farm
+80.0 72.0 4.0 10.0 1.80
+# Farm irrigation pond
+55.0 82.0 6.0 5.0 2.00
+
+# SMALLER ISLANDS - Offshore points of interest
+# Lighthouse island (far southeast)
+150.0 100.0 6.0 5.0 2.20
+
+# Fishing rock cluster (east)
+145.0 65.0 5.0 4.0 2.10
+
+# Mysterious ruin island (north)
+95.0 8.0 8.0 6.0 2.30
+
+# Forgotten shrine isle (west)
+8.0 35.0 5.0 4.0 2.20
+
+# Scenery Sprites & Flora Placements
+# Format: SPRITE resource/path.png tileX tileY scale solid layerOffset
+# Format: ANIM scenery-name tileX tileY scale solid layerOffset
+
+# ============================================================
+# FARMSTEAD REGION (Southwest) - Player spawn & homestead
+# ============================================================
+
+# Farmhouse porch & entry - using ts_cottage_blue (clean tileset cottage)
+SPRITE sprites/buildings/ts_cottage_blue.png 30 104 4 true 0
+
+# Shipping bin beside porch - using crop crates
+SPRITE sprites/crops/crate_base.png 34 106 2 false 0
+SPRITE sprites/crops/crate_top.png 34 105 2 false 1
+
+# Tool shed near farmhouse
+SPRITE sprites/buildings/small_shed.png 25 100 3 true 0
+
+# Well near house - using arch_gate as well structure
+SPRITE sprites/buildings/arch_gate.png 36 102 2 false 0
+
+# Crop field fencing (rectangular plots) - posts and beams
+SPRITE sprites/buildings/post.png 16 90 2 false 0
+SPRITE sprites/buildings/post.png 25 90 2 false 0
+SPRITE sprites/buildings/beam.png 20 89 2 false 0
+
+SPRITE sprites/buildings/post.png 16 80 2 false 0
+SPRITE sprites/buildings/post.png 25 80 2 false 0
+SPRITE sprites/buildings/beam.png 20 79 2 false 0
+
+# Animal pasture fencing
+SPRITE sprites/buildings/post.png 28 70 2 false 0
+SPRITE sprites/buildings/post.png 42 70 2 false 0
+SPRITE sprites/buildings/beam.png 35 69 2 false 0
+
+# Hay bales in pasture - using crate_lid as hay
+SPRITE sprites/buildings/crate_lid.png 31 75 2 false 0
+SPRITE sprites/buildings/crate_lid.png 39 72 2 false 0
+SPRITE sprites/buildings/crate_lid.png 30 71 2 false 0
+
+# Wood pile near shed
+SPRITE sprites/buildings/wood_pile.png 23 98 2 false 0
+SPRITE sprites/buildings/plank_thin.png 24 99 2 false 0
+SPRITE sprites/buildings/plank_wide.png 22 97 2 false 0
+SPRITE sprites/buildings/ladder.png 25 99 2 false 0
+
+# Garden decorations - mixed bushes
+SPRITE sprites/buildings/bush_green.png 28 102 2 false 0
+SPRITE sprites/buildings/bush_berry_red.png 32 102 2 false 0
+SPRITE sprites/buildings/bush_berry_orange.png 36 102 2 false 0
+SPRITE sprites/buildings/bush_green.png 24 98 2 false 0
+
+# Farm path markers - rocks
+SPRITE sprites/buildings/rock_med.png 20 86 2 false 0
+SPRITE sprites/buildings/rock_small.png 22 88 2 false 0
+SPRITE sprites/buildings/rock_big.png 18 84 2 false 0
+
+# ============================================================
+# VILLAGE CENTER (Central) - Shops, NPCs, community hub
+# ============================================================
+
+# Row of cottages facing village green - all 5 colors
+SPRITE sprites/buildings/ts_cottage_blue.png 45 66 2 true 0
+SPRITE sprites/buildings/ts_cottage_green.png 50 66 2 true 0
+SPRITE sprites/buildings/ts_cottage_orange.png 55 66 2 true 0
+SPRITE sprites/buildings/ts_cottage_red.png 62 66 2 true 0
+SPRITE sprites/buildings/ts_cottage_purple.png 24 64 2 true 0
+
+# Civic buildings around market square
+SPRITE sprites/buildings/arch_hall.png 50 55 2 false 0
+SPRITE sprites/buildings/blue_cottage.png 58 60 2 false 0
+SPRITE sprites/buildings/ts_cottage_green.png 42 58 2 true 0
+SPRITE sprites/buildings/ts_cottage_orange.png 61 52 2 true 0
+
+# Market stalls - variety of crates
+SPRITE sprites/buildings/crate_tall.png 44 61 2 false 0
+SPRITE sprites/buildings/crate_small.png 45 60 2 false 0
+SPRITE sprites/buildings/crate_lid.png 55 61 2 false 0
+SPRITE sprites/buildings/crate_tall.png 56 60 2 false 0
+SPRITE sprites/buildings/crate_small.png 46 57 2 false 0
+SPRITE sprites/buildings/crate_lid.png 54 57 2 false 0
+SPRITE sprites/crops/crate_base.png 48 55 2 false 0
+SPRITE sprites/crops/crate_top.png 48 54 2 false 1
+
+# Village well centerpiece
+SPRITE sprites/buildings/arch_gate.png 45 69 2 false 0
+
+# Signposts/awning markers at village entrances
+SPRITE sprites/buildings/awning_blue.png 36 51 2 false 0
+SPRITE sprites/buildings/awning_blue.png 63 51 2 false 0
+SPRITE sprites/buildings/awning_blue.png 50 42 2 false 0
+
+# Village decorations - mixed berry bushes
+SPRITE sprites/buildings/bush_green.png 43 52 2 false 0
+SPRITE sprites/buildings/bush_berry_red.png 47 52 2 false 0
+SPRITE sprites/buildings/bush_berry_orange.png 54 52 2 false 0
+SPRITE sprites/buildings/bush_green.png 63 52 2 false 0
+SPRITE sprites/buildings/bush_berry_red.png 53 52 2 false 0
+SPRITE sprites/buildings/bush_berry_orange.png 60 52 2 false 0
+SPRITE sprites/buildings/bush_green.png 38 58 2 false 0
+SPRITE sprites/buildings/bush_berry_red.png 40 56 2 false 0
+SPRITE sprites/buildings/bush_berry_orange.png 58 56 2 false 0
+
+# Workshop area behind village - lumber and tools
+SPRITE sprites/buildings/wood_pile.png 72 65 2 false 0
+SPRITE sprites/buildings/crate_small.png 78 69 2 false 0
+SPRITE sprites/buildings/crate_tall.png 82 69 2 false 0
+SPRITE sprites/buildings/crate_lid.png 84 69 2 false 0
+SPRITE sprites/buildings/plank_thin.png 84 67 2 false 0
+SPRITE sprites/buildings/plank_wide.png 80 66 2 false 0
+SPRITE sprites/buildings/ladder.png 85 67 2 false 0
+SPRITE sprites/buildings/stairs.png 76 68 2 false 0
+SPRITE sprites/buildings/beam.png 74 66 2 false 0
+SPRITE sprites/buildings/post.png 70 64 2 false 0
+SPRITE sprites/buildings/post.png 88 64 2 false 0
+
+# Windmill landmark - animated
+ANIM windmill 70 64 1 false 0
+
+# Additional village structures
+SPRITE sprites/buildings/blue_cottage_alt.png 68 55 2 true 0
+SPRITE sprites/buildings/blue_cottage_small.png 72 52 2 true 0
+
+# ============================================================
+# ANCIENT FOREST (Northwest) - Dense trees, foraging, secrets
+# ============================================================
+
+# Major tree groves - deliberate clusters of trees and pines
+ANIM tree 18 30 2 false 0
+ANIM tree 22 34 2 false 0
+ANIM tree 26 28 2 false 0
+ANIM tree 32 38 2 false 0
+ANIM pine 15 40 2 false 0
+ANIM pine 35 30 2 false 0
+ANIM pine 28 42 2 false 0
+
+# Deep forest trees
+ANIM tree 10 20 2 false 0
+ANIM pine 14 22 2 false 0
+ANIM tree 24 16 2 false 0
+ANIM pine 30 18 2 false 0
+
+# Ancient standing stones / ruins
+SPRITE sprites/buildings/rock_big.png 12 25 2 false 0
+SPRITE sprites/buildings/rock_med.png 16 28 2 false 0
+SPRITE sprites/buildings/rock_small.png 14 26 2 false 0
+SPRITE sprites/buildings/rock_big.png 8 18 2 false 0
+SPRITE sprites/buildings/rock_med.png 6 22 2 false 0
+SPRITE sprites/buildings/rock_small.png 10 20 2 false 0
+
+# Foraging bushes - all three types
+SPRITE sprites/buildings/bush_green.png 20 22 2 false 0
+SPRITE sprites/buildings/bush_berry_red.png 24 22 2 false 0
+SPRITE sprites/buildings/bush_berry_orange.png 28 22 2 false 0
+SPRITE sprites/buildings/bush_green.png 8 30 2 false 0
+SPRITE sprites/buildings/bush_berry_red.png 12 30 2 false 0
+SPRITE sprites/buildings/bush_berry_orange.png 16 30 2 false 0
+SPRITE sprites/buildings/bush_green.png 34 26 2 false 0
+SPRITE sprites/buildings/bush_berry_red.png 38 26 2 false 0
+
+# Mushroom clusters in shaded hollows - all 4 varieties
+ANIM mushroom 16 32 2 false 0
+ANIM mushroom_blue 18 32 2 false 0
+ANIM mushroom_blue2 15 33 2 false 0
+ANIM mushroom_blue3 19 33 2 false 0
+ANIM mushroom 30 26 2 false 0
+ANIM mushroom_blue 32 26 2 false 0
+ANIM mushroom_blue2 29 27 2 false 0
+ANIM mushroom_blue3 33 27 2 false 0
+ANIM mushroom 8 28 2 false 0
+ANIM mushroom_blue 6 26 2 false 0
+ANIM mushroom_blue2 10 24 2 false 0
+
+# Wood pile in forest clearing
+SPRITE sprites/buildings/wood_pile.png 22 36 2 false 0
+SPRITE sprites/buildings/plank_wide.png 20 38 2 false 0
+
+# ============================================================
+# SANDY BEACH & DOCKS (Southeast) - Fishing, boats, ocean
+# ============================================================
+
+# Main dock structure
+SPRITE sprites/buildings/arch_gate.png 130 90 2 false 0
+
+# Coastal coracles & beach landings
+SPRITE sprites/other/spr_deco_coracle_land.png 125 98 2 false 0
+SPRITE sprites/other/spr_deco_coracle_land.png 138 100 2 false 0
+SPRITE sprites/other/spr_deco_coracle_land.png 118 95 2 false 0
+
+# Dock buildings
+SPRITE sprites/buildings/ladder.png 135 92 2 false 0
+SPRITE sprites/buildings/plank_wide.png 132 93 2 false 0
+SPRITE sprites/buildings/stairs.png 133 95 2 false 0
+SPRITE sprites/buildings/small_shed.png 128 86 3 true 0
+
+# Bait shed & supplies - mixed crates
+SPRITE sprites/buildings/crate_small.png 126 88 2 false 0
+SPRITE sprites/buildings/crate_tall.png 124 87 2 false 0
+SPRITE sprites/buildings/crate_lid.png 122 88 2 false 0
+SPRITE sprites/crops/crate_base.png 130 88 2 false 0
+SPRITE sprites/crops/crate_top.png 130 87 2 false 1
+
+# Beach decorations - rocks of all sizes
+SPRITE sprites/buildings/rock_big.png 140 102 2 false 0
+SPRITE sprites/buildings/rock_med.png 144 105 2 false 0
+SPRITE sprites/buildings/rock_small.png 142 103 2 false 0
+SPRITE sprites/buildings/rock_big.png 115 100 2 false 0
+SPRITE sprites/buildings/rock_med.png 118 103 2 false 0
+SPRITE sprites/buildings/rock_small.png 116 101 2 false 0
+SPRITE sprites/buildings/rock_big.png 148 96 2 false 0
+SPRITE sprites/buildings/rock_med.png 146 98 2 false 0
+
+# Beach bushes
+SPRITE sprites/buildings/bush_green.png 135 88 2 false 0
+SPRITE sprites/buildings/bush_berry_red.png 138 86 2 false 0
+SPRITE sprites/buildings/bush_berry_orange.png 142 88 2 false 0
+SPRITE sprites/buildings/bush_green.png 120 92 2 false 0
+SPRITE sprites/buildings/bush_berry_red.png 122 90 2 false 0
+
+# Animated boats bobbing on water
+ANIM boat 122 88 2 false 0
+ANIM boat 128 92 2 false 0
+ANIM boat 142 95 2 false 0
+ANIM boat 118 90 2 false 0
+
+# Ducks at shore
+ANIM duck 126 92 2 false 0
+ANIM duck 134 96 2 false 0
+ANIM duck 120 94 2 false 0
+
+# ============================================================
+# ROCKY MOUNTAINS (Northeast) - Mining, caves, high ground
+# ============================================================
+
+# Mountain peak structures - towers
+SPRITE sprites/buildings/watch_tower.png 126 32 2 true 0
+SPRITE sprites/buildings/blue_tower.png 139 54 2 true 0
+SPRITE sprites/buildings/tower_blue.png 123 76 2 true 0
+
+# Mountain homes - variety of houses
+SPRITE sprites/buildings/house_blue2.png 113 44 2 true 0
+SPRITE sprites/buildings/house_blue3.png 110 38 3 true 0
+SPRITE sprites/buildings/house_blue4.png 118 35 3 true 0
+SPRITE sprites/buildings/house_brown.png 115 30 3 true 0
+SPRITE sprites/buildings/blue_house.png 113 43 2 true 0
+SPRITE sprites/buildings/blue_cottage_alt.png 104 58 2 true 0
+SPRITE sprites/buildings/blue_cottage_small.png 116 58 2 true 0
+SPRITE sprites/buildings/tall_house.png 101 43 2 true 0
+SPRITE sprites/buildings/arch_gate.png 95 47 2 false 0
+
+# Mining area props - abundant rocks
+SPRITE sprites/buildings/rock_big.png 120 28 2 false 0
+SPRITE sprites/buildings/rock_med.png 125 25 2 false 0
+SPRITE sprites/buildings/rock_small.png 122 30 2 false 0
+SPRITE sprites/buildings/rock_big.png 135 22 2 false 0
+SPRITE sprites/buildings/rock_med.png 138 19 2 false 0
+SPRITE sprites/buildings/rock_small.png 136 24 2 false 0
+SPRITE sprites/buildings/rock_big.png 105 24 2 false 0
+SPRITE sprites/buildings/rock_med.png 108 27 2 false 0
+SPRITE sprites/buildings/rock_small.png 106 25 2 false 0
+SPRITE sprites/buildings/rock_big.png 128 40 2 false 0
+SPRITE sprites/buildings/rock_med.png 132 38 2 false 0
+SPRITE sprites/buildings/rock_small.png 130 42 2 false 0
+
+# Mine entrance supports - wood piles and planks
+SPRITE sprites/buildings/wood_pile.png 110 48 2 false 0
+SPRITE sprites/buildings/crate_tall.png 108 50 2 false 0
+SPRITE sprites/buildings/crate_small.png 112 50 2 false 0
+SPRITE sprites/buildings/ladder.png 114 49 2 false 0
+SPRITE sprites/buildings/plank_wide.png 106 47 2 false 0
+SPRITE sprites/buildings/plank_thin.png 116 49 2 false 0
+SPRITE sprites/buildings/stairs.png 108 52 2 false 0
+
+# Mountain trees - pines dominate at elevation
+ANIM pine 120 38 2 false 0
+ANIM pine 125 35 2 false 0
+ANIM pine 132 40 2 false 0
+ANIM pine 115 32 2 false 0
+ANIM pine 130 48 2 false 0
+ANIM pine 140 45 2 false 0
+ANIM tree 118 45 2 false 0
+ANIM tree 135 50 2 false 0
+ANIM pine 105 35 2 false 0
+ANIM pine 142 48 2 false 0
+
+# Mountain mushrooms (high altitude blue variants)
+ANIM mushroom_blue 122 34 2 false 0
+ANIM mushroom_blue2 128 31 2 false 0
+ANIM mushroom_blue3 118 29 2 false 0
+ANIM mushroom_blue 135 38 2 false 0
+ANIM mushroom_blue2 115 40 2 false 0
+
+# Mountain berry bushes
+SPRITE sprites/buildings/bush_berry_red.png 110 42 2 false 0
+SPRITE sprites/buildings/bush_berry_orange.png 114 40 2 false 0
+SPRITE sprites/buildings/bush_green.png 125 48 2 false 0
+
+# ============================================================
+# SMALL ISLANDS - Points of interest
+# ============================================================
+
+# Lighthouse island
+SPRITE sprites/buildings/watch_tower.png 150 100 2 true 0
+SPRITE sprites/buildings/rock_big.png 148 102 2 false 0
+SPRITE sprites/buildings/rock_med.png 152 99 2 false 0
+ANIM boat 147 102 2 false 0
+
+# Fishing rocks
+SPRITE sprites/buildings/rock_big.png 145 65 2 false 0
+SPRITE sprites/buildings/rock_med.png 147 63 2 false 0
+SPRITE sprites/buildings/rock_small.png 143 66 2 false 0
+ANIM boat 147 63 2 false 0
+
+# Mysterious ruin island (north) - arch_hall as ancient structure
+SPRITE sprites/buildings/arch_hall.png 95 8 2 false 0
+SPRITE sprites/buildings/rock_big.png 92 6 2 false 0
+SPRITE sprites/buildings/rock_med.png 98 10 2 false 0
+SPRITE sprites/buildings/rock_small.png 94 12 2 false 0
+SPRITE sprites/buildings/rock_big.png 90 8 2 false 0
+SPRITE sprites/buildings/rock_med.png 100 8 2 false 0
+ANIM mushroom_blue 96 10 2 false 0
+ANIM mushroom_blue2 94 8 2 false 0
+ANIM mushroom_blue3 98 8 2 false 0
+ANIM blinking 95 8 2 false 0
+
+# Forgotten shrine isle (west)
+SPRITE sprites/buildings/arch_gate.png 8 35 2 false 0
+SPRITE sprites/buildings/rock_big.png 6 33 2 false 0
+SPRITE sprites/buildings/rock_med.png 10 37 2 false 0
+SPRITE sprites/buildings/bush_green.png 6 36 2 false 0
+SPRITE sprites/buildings/bush_berry_red.png 10 34 2 false 0
+ANIM mushroom 8 33 2 false 0
+ANIM mushroom_blue 8 37 2 false 0
+ANIM blinking 8 35 2 false 0
+
+# ============================================================
+# CONNECTING ELEMENTS - Paths, bridges, transitions
+# ============================================================
+
+# River crossing bridges (visual markers - planks across water)
+SPRITE sprites/buildings/plank_wide.png 100 70 2 false 0
+SPRITE sprites/buildings/plank_wide.png 85 70 2 false 0
+SPRITE sprites/buildings/plank_wide.png 115 65 2 false 0
+SPRITE sprites/buildings/plank_wide.png 70 75 2 false 0
+SPRITE sprites/buildings/plank_wide.png 55 80 2 false 0
+
+# Crossroads signposts/awning markers
+SPRITE sprites/buildings/awning_blue.png 70 42 2 false 0
+SPRITE sprites/buildings/awning_blue.png 45 80 2 false 0
+SPRITE sprites/buildings/awning_blue.png 120 68 2 false 0
+SPRITE sprites/buildings/awning_blue.png 30 55 2 false 0
+SPRITE sprites/buildings/awning_blue.png 85 48 2 false 0
+
+# Decorative trees along major paths
+ANIM tree 80 45 2 false 0
+ANIM tree 85 50 2 false 0
+ANIM pine 90 42 2 false 0
+ANIM tree 60 78 2 false 0
+ANIM pine 65 75 2 false 0
+ANIM tree 105 75 2 false 0
+ANIM pine 110 72 2 false 0
+ANIM tree 40 55 2 false 0
+ANIM pine 35 60 2 false 0
+ANIM tree 95 38 2 false 0
+
+# Orchard rows (north of village) - alternating tree/pine
+ANIM tree 54 44 2 false 0
+ANIM tree 57 44 2 false 0
+ANIM tree 60 44 2 false 0
+ANIM tree 63 44 2 false 0
+ANIM pine 54 47 2 false 0
+ANIM pine 57 47 2 false 0
+ANIM pine 60 47 2 false 0
+ANIM pine 63 47 2 false 0
+ANIM tree 48 50 2 false 0
+ANIM tree 51 50 2 false 0
+ANIM pine 54 50 2 false 0
+ANIM pine 57 50 2 false 0
+
+# Southern coastal trees
+ANIM tree 40 88 2 false 0
+ANIM pine 46 92 2 false 0
+ANIM tree 80 85 2 false 0
+ANIM pine 86 89 2 false 0
+ANIM tree 110 82 2 false 0
+ANIM pine 116 86 2 false 0
+ANIM tree 120 90 2 false 0
+ANIM pine 125 88 2 false 0
+
+# Additional decorative elements using crop assets as world props
+# Giant vegetables as decorative landmarks
+SPRITE sprites/crops/pumpkin_05.png 35 95 2 false 0
+SPRITE sprites/crops/cabbage_05.png 38 93 2 false 0
+SPRITE sprites/crops/sunflower_05.png 42 95 2 false 0
+SPRITE sprites/crops/cauliflower_05.png 55 90 2 false 0
+
+# Farm crop preview plots near farmhouse
+SPRITE sprites/crops/carrot_05.png 18 88 2 false 0
+SPRITE sprites/crops/wheat_05.png 20 86 2 false 0
+SPRITE sprites/crops/parsnip_05.png 22 88 2 false 0
+SPRITE sprites/crops/radish_05.png 16 86 2 false 0
+SPRITE sprites/crops/beetroot_05.png 24 86 2 false 0
+SPRITE sprites/crops/potato_05.png 26 88 2 false 0
+SPRITE sprites/crops/kale_05.png 18 84 2 false 0
+
+# Seeds and materials as world decoration
+SPRITE sprites/crops/seeds_generic.png 33 104 2 false 0
+SPRITE sprites/crops/wood.png 35 104 2 false 0
+SPRITE sprites/crops/fish.png 37 104 2 false 0
+SPRITE sprites/crops/egg.png 39 104 2 false 0
+SPRITE sprites/crops/milk.png 41 104 2 false 0
+SPRITE sprites/crops/rock.png 33 106 2 false 0

@@ -72,7 +72,7 @@ public class PlayingState extends State {
                 }
             }
 
-            if (!tileM.isSolid(x + dx, y + dy) && !tileM.isSolid(x + dx + 24, y + dy)) {
+            if (tileM.isWalkable(x + dx, y + dy) && tileM.isWalkable(x + dx + 24, y + dy)) {
                 x += dx;
                 y += dy;
             } else {
@@ -146,18 +146,20 @@ public class PlayingState extends State {
 
         // Spawn roaming farm animals
         animals.clear();
-        // Chickens scratching near the garden gate
-        animals.add(new Animal(18 * 32, 19 * 32, assetM.getChickenFrames()));
-        animals.add(new Animal(22 * 32, 20 * 32, assetM.getChickenFrames()));
-        animals.add(new Animal(26 * 32, 19 * 32, assetM.getChickenFrames()));
-        // Cows, sheep & pigs in the fenced pasture
-        animals.add(new Animal(31 * 32, 32 * 32, assetM.getCowFrames()));
-        animals.add(new Animal(36 * 32, 36 * 32, assetM.getCowFrames()));
-        animals.add(new Animal(33 * 32, 35 * 32, assetM.getSheepFrames()));
-        animals.add(new Animal(39 * 32, 31 * 32, assetM.getSheepFrames()));
-        animals.add(new Animal(30 * 32, 36 * 32, assetM.getPigFrames()));
-        animals.add(new Animal(37 * 32, 33 * 32, assetM.getPigFrames()));
-        // Ducks and little critters around the western pond
+        // Chickens near the egg spots inside the fenced pasture (x=28..42, y=29..38)
+        animals.add(new Animal(31 * 32, 35 * 32, assetM.getChickenFrames()));
+        animals.add(new Animal(35 * 32, 31 * 32, assetM.getChickenFrames()));
+        animals.add(new Animal(40 * 32, 36 * 32, assetM.getChickenFrames()));
+        // Cows near the milk spots inside the fenced pasture
+        animals.add(new Animal(33 * 32, 33 * 32, assetM.getCowFrames()));
+        animals.add(new Animal(38 * 32, 34 * 32, assetM.getCowFrames()));
+        animals.add(new Animal(30 * 32, 37 * 32, assetM.getCowFrames()));
+        // Sheep grazing in the pasture
+        animals.add(new Animal(30 * 32, 33 * 32, assetM.getSheepFrames()));
+        animals.add(new Animal(36 * 32, 37 * 32, assetM.getSheepFrames()));
+        // Pig rooting around the mud
+        animals.add(new Animal(34 * 32, 36 * 32, assetM.getPigFrames()));
+        // Ducks at the pond shore
         animals.add(new Animal(9 * 32, 32 * 32, assetM.getSceneryFrames("duck")));
         animals.add(new Animal(22 * 32, 36 * 32, assetM.getSceneryFrames("duck")));
         animals.add(new Animal(12 * 32, 38 * 32, assetM.getSceneryFrames("blinking")));

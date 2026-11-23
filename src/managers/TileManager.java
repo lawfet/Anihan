@@ -254,6 +254,18 @@ public final class TileManager {
         // This must happen after all large channels and ponds are carved.
         connectAllLandmasses();
 
+        // North-South connecting bridge and paved spine to SW Island
+        for (int y = 41; y <= 71; y++) {
+            for (int x = 37; x <= 39; x++) {
+                if (mapTiles[y][x] == TILE_WATER) {
+                    mapTiles[y][x] = TILE_DOCK;
+                } else if (mapTiles[y][x] == TILE_GRASS) {
+                    mapTiles[y][x] = TILE_DIRT;
+                }
+                reserved[y][x] = true;
+            }
+        }
+
         carveRoad(96, 24, 96, 71);
         carveRoad(37, 70, 123, 70);
         carveRoad(123, 70, 123, 77);
@@ -268,6 +280,7 @@ public final class TileManager {
         carveRoad(126, 24, 126, 32);
         carveRoad(139, 24, 139, 54);
         carveRoad(80, 63, 96, 63);
+        carveRoad(37, 70, 38, 98);
         reserveRect(80, 54, 94, 64);
         reserveRect(59, 58, 66, 64);
         reserveRect(97, 45, 120, 50);
@@ -485,23 +498,17 @@ public final class TileManager {
     }
 
     /**
-     * Cuts two broad, gently winding sea channels through the island.
-     * The channels create separate districts and coves while preserving
-     * enough land for the existing farm, village, forest and beach areas.
-     */
-    /**
      * Carves wide, winding sea channels through the archipelago.
      * The north/south channel separates the west and east districts; the
      * east/west channel separates the northern village from southern coves.
      */
     private void carveChannels() {
-        // Meandering east-west sea channel. The changing width creates bays
-        // and narrow passages instead of one perfectly uniform cross-cut.
-        for (int x = 5; x < mapWidth - 5; x++) {
-            double wave = Math.sin(x * 0.061) * 5.0
-                    + Math.sin(x * 0.137 + 0.8) * 2.2;
+        // Meandering east-west sea channels separating the archipelago districts.
+        for (int x = 5; x <= 73; x++) {
+            double wave = Math.sin(x * 0.061) * 4.0
+                    + Math.sin(x * 0.137 + 0.8) * 2.0;
             int centerY = 57 + (int) Math.round(wave);
-            int halfWidth = 2 + (int) Math.round((1.0 + Math.sin(x * 0.09)) * 1.0);
+            int halfWidth = 2 + (int) Math.round((1.0 + Math.sin(x * 0.09)) * 0.8);
             for (int y = centerY - halfWidth; y <= centerY + halfWidth; y++) {
                 if (x > 1 && y > 1 && x < mapWidth - 2 && y < mapHeight - 2) {
                     mapTiles[y][x] = TILE_WATER;
@@ -509,13 +516,36 @@ public final class TileManager {
             }
         }
 
-        // North-south channel bends independently, opening wider coves at
-        // alternating points along the eastern and western shorelines.
-        for (int y = 5; y < mapHeight - 5; y++) {
-            double wave = Math.sin(y * 0.073 + 0.4) * 4.2
-                    + Math.sin(y * 0.151) * 1.8;
-            int centerX = 91 + (int) Math.round(wave);
-            int halfWidth = 2 + (int) Math.round((1.0 + Math.sin(y * 0.11 + 1.0)) * 0.8);
+        for (int x = 101; x < mapWidth - 5; x++) {
+            double wave = Math.sin(x * 0.061) * 4.0
+                    + Math.sin(x * 0.137 + 0.8) * 2.0;
+            int centerY = 57 + (int) Math.round(wave);
+            int halfWidth = 2 + (int) Math.round((1.0 + Math.sin(x * 0.09)) * 0.8);
+            for (int y = centerY - halfWidth; y <= centerY + halfWidth; y++) {
+                if (x > 1 && y > 1 && x < mapWidth - 2 && y < mapHeight - 2) {
+                    mapTiles[y][x] = TILE_WATER;
+                }
+            }
+        }
+
+        // North-south sea channels separating the archipelago districts.
+        for (int y = 5; y <= 48; y++) {
+            double wave = Math.sin(y * 0.073 + 0.4) * 3.5
+                    + Math.sin(y * 0.151) * 1.5;
+            int centerX = 88 + (int) Math.round(wave);
+            int halfWidth = 2 + (int) Math.round((1.0 + Math.sin(y * 0.11 + 1.0)) * 0.6);
+            for (int x = centerX - halfWidth; x <= centerX + halfWidth; x++) {
+                if (x > 1 && y > 1 && x < mapWidth - 2 && y < mapHeight - 2) {
+                    mapTiles[y][x] = TILE_WATER;
+                }
+            }
+        }
+
+        for (int y = 72; y < mapHeight - 5; y++) {
+            double wave = Math.sin(y * 0.073 + 0.4) * 3.5
+                    + Math.sin(y * 0.151) * 1.5;
+            int centerX = 88 + (int) Math.round(wave);
+            int halfWidth = 2 + (int) Math.round((1.0 + Math.sin(y * 0.11 + 1.0)) * 0.6);
             for (int x = centerX - halfWidth; x <= centerX + halfWidth; x++) {
                 if (x > 1 && y > 1 && x < mapWidth - 2 && y < mapHeight - 2) {
                     mapTiles[y][x] = TILE_WATER;
@@ -529,12 +559,9 @@ public final class TileManager {
         carveEllipse(145, 101, 6, 5, TILE_WATER);
         carveEllipse(71, 7, 5, 3, TILE_WATER);
 
-        // Additional sheltered inlets break up the large shores into smaller
-        // coves, peninsulas and footbridge approaches like the reference map.
-        carveEllipse(25, 50, 5, 9, TILE_WATER);
-        carveEllipse(74, 52, 7, 5, TILE_WATER);
-        carveEllipse(139, 57, 6, 9, TILE_WATER);
-        carveEllipse(83, 88, 5, 6, TILE_WATER);
+        // Additional sheltered inlets break up the outer shores into coves
+        carveEllipse(25, 50, 4, 6, TILE_WATER);
+        carveEllipse(139, 57, 5, 7, TILE_WATER);
         carveEllipse(18, 86, 4, 6, TILE_WATER);
     }
 
@@ -665,6 +692,16 @@ public final class TileManager {
                 markDockIfWater(x - 1, y);
                 markDockIfWater(x + 1, y);
             }
+
+            // Reserve bridge corridor and pave land approaches so trees and props never block bridges
+            for (int ry = Math.max(0, y - 2); ry <= Math.min(mapHeight - 1, y + 2); ry++) {
+                for (int rx = Math.max(0, x - 2); rx <= Math.min(mapWidth - 1, x + 2); rx++) {
+                    reserved[ry][rx] = true;
+                    if (mapTiles[ry][rx] == TILE_GRASS) {
+                        mapTiles[ry][rx] = TILE_DIRT;
+                    }
+                }
+            }
         }
     }
 
@@ -723,6 +760,7 @@ public final class TileManager {
         if (x < 0 || y < 0 || x >= mapWidth || y >= mapHeight) return;
         if (mapTiles[y][x] == TILE_WATER || mapTiles[y][x] == TILE_DOCK) return;
         mapTiles[y][x] = tile;
+        reserved[y][x] = true;
     }
 
     private void reserveRect(int x0, int y0, int x1, int y1) {
@@ -1147,6 +1185,29 @@ public final class TileManager {
             if (building == null) continue;
             int centerX = spec.tileX * TILE_SIZE + TILE_SIZE / 2;
             int bottomY = spec.bottomTileY * TILE_SIZE;
+            int tileX = spec.tileX;
+            int tileY = spec.bottomTileY;
+            // Only place building if the ground is walkable (not water)
+            int groundTile = tileAt(tileX, tileY);
+            if (groundTile != TILE_GRASS && groundTile != TILE_DIRT && groundTile != TILE_FLOWERS) {
+                // Try to find nearby land
+                boolean foundLand = false;
+                for (int dy = -2; dy <= 2 && !foundLand; dy++) {
+                    for (int dx = -2; dx <= 2 && !foundLand; dx++) {
+                        int nx = tileX + dx;
+                        int ny = tileY + dy;
+                        int nt = tileAt(nx, ny);
+                        if (nt == TILE_GRASS || nt == TILE_DIRT || nt == TILE_FLOWERS) {
+                            centerX = nx * TILE_SIZE + TILE_SIZE / 2;
+                            bottomY = ny * TILE_SIZE;
+                            tileX = nx;
+                            tileY = ny;
+                            foundLand = true;
+                        }
+                    }
+                }
+                if (!foundLand) continue; // Skip building if no land nearby
+            }
             // Open pavilions sit visually behind anyone standing beneath them.
             int depth = spec.solid ? bottomY : bottomY - 3 * TILE_SIZE;
             addObject(building, centerX, bottomY, depth, spec.scale);
@@ -1192,8 +1253,7 @@ public final class TileManager {
             markBuildingSolid(windmill[0], windmillX, windmillY, 1);
         }
 
-        addObject(assetManager.getBuilding("wood_pile"), 82 * TILE_SIZE, 66 * TILE_SIZE, 66 * TILE_SIZE, 2);
-        addObject(assetManager.getBuilding("plank_thin"), 84 * TILE_SIZE, 66 * TILE_SIZE, 66 * TILE_SIZE, 2);
+        // Extra expansion-field props at (82,66) and (84,66) are placed via farm_map.txt.
         addObject(assetManager.getBuilding("awning_blue"), 111 * TILE_SIZE, 49 * TILE_SIZE, 47 * TILE_SIZE, 2);
         addObject(assetManager.getBuilding("crate_small"), 110 * TILE_SIZE, 49 * TILE_SIZE, 49 * TILE_SIZE, 2);
         BufferedImage annex = composeHouse();
@@ -1202,9 +1262,7 @@ public final class TileManager {
         addObject(createSign(), 95 * TILE_SIZE, 52 * TILE_SIZE, 52 * TILE_SIZE);
         addObject(createSign(), 40 * TILE_SIZE, 69 * TILE_SIZE, 69 * TILE_SIZE);
 
-        // Beach coracle, plus little boats bobbing at the shore and dock.
-        addObject(assetManager.getCoracleLand(), 7 * TILE_SIZE, 31 * TILE_SIZE, 31 * TILE_SIZE);
-        addAnimated(assetManager.getSceneryFrames("boat"), 8 * TILE_SIZE, 33 * TILE_SIZE, 33 * TILE_SIZE, 0);
+        // Dock boat - coracle@7,31 and boat@8,33 are placed via farm_map.txt.
         if (dockEndX > 0 && dockEndY > 0) {
             int depth = (dockEndY + 1) * TILE_SIZE;
             addAnimated(assetManager.getSceneryFrames("boat"),
@@ -1216,6 +1274,32 @@ public final class TileManager {
         addObject(hay, 31 * TILE_SIZE, 36 * TILE_SIZE, 36 * TILE_SIZE);
         addObject(hay, 39 * TILE_SIZE, 32 * TILE_SIZE, 32 * TILE_SIZE);
         addObject(hay, 30 * TILE_SIZE, 31 * TILE_SIZE, 31 * TILE_SIZE);
+
+        // Farm animals roaming inside the fenced pasture (x=28..42, y=29..38).
+        // Chickens near the egg spots.
+        addAnimated(assetManager.getChickenFrames(), 31 * TILE_SIZE + 16, 35 * TILE_SIZE, 35 * TILE_SIZE, 0);
+        addAnimated(assetManager.getChickenFrames(), 35 * TILE_SIZE + 16, 31 * TILE_SIZE, 31 * TILE_SIZE, 2);
+        addAnimated(assetManager.getChickenFrames(), 40 * TILE_SIZE + 16, 36 * TILE_SIZE, 36 * TILE_SIZE, 4);
+        // Cows near the milk spots.
+        addAnimated(assetManager.getCowFrames(), 33 * TILE_SIZE + 16, 34 * TILE_SIZE, 34 * TILE_SIZE, 1);
+        addAnimated(assetManager.getCowFrames(), 38 * TILE_SIZE + 16, 35 * TILE_SIZE, 35 * TILE_SIZE, 3);
+        // Sheep grazing in the pasture.
+        addAnimated(assetManager.getSheepFrames(), 30 * TILE_SIZE + 16, 33 * TILE_SIZE, 33 * TILE_SIZE, 5);
+        addAnimated(assetManager.getSheepFrames(), 36 * TILE_SIZE + 16, 37 * TILE_SIZE, 37 * TILE_SIZE, 7);
+        // Pig rooting around the mud.
+        addAnimated(assetManager.getPigFrames(), 34 * TILE_SIZE + 16, 36 * TILE_SIZE, 36 * TILE_SIZE, 6);
+
+        // Ducks at the pond shore.
+        addAnimated(assetManager.getSceneryFrames("duck"), 16 * TILE_SIZE, 33 * TILE_SIZE, 33 * TILE_SIZE, 0);
+        addAnimated(assetManager.getSceneryFrames("duck"), 14 * TILE_SIZE + 16, 35 * TILE_SIZE, 35 * TILE_SIZE, 2);
+        // Birds perched near trees and rooftops.
+        addAnimated(assetManager.getSceneryFrames("bird"), 45 * TILE_SIZE + 16, 31 * TILE_SIZE - 8, 31 * TILE_SIZE + 1, 0);
+        addAnimated(assetManager.getSceneryFrames("bird"), 50 * TILE_SIZE + 16, 31 * TILE_SIZE - 8, 31 * TILE_SIZE + 1, 3);
+        addAnimated(assetManager.getSceneryFrames("bird"), 62 * TILE_SIZE + 16, 31 * TILE_SIZE - 8, 31 * TILE_SIZE + 1, 5);
+        // Blinking critters (firefly-like) near ponds and groves.
+        addAnimated(assetManager.getSceneryFrames("blinking"), 15 * TILE_SIZE, 32 * TILE_SIZE, 32 * TILE_SIZE, 0);
+        addAnimated(assetManager.getSceneryFrames("blinking"), 64 * TILE_SIZE + 16, 38 * TILE_SIZE, 38 * TILE_SIZE, 4);
+        addAnimated(assetManager.getSceneryFrames("blinking"), 33 * TILE_SIZE, 44 * TILE_SIZE, 44 * TILE_SIZE, 8);
 
         // Signposts at the crossroads and village square.
         BufferedImage sign = createSign();
@@ -1474,7 +1558,8 @@ public final class TileManager {
         for (int y = Math.max(0, top); y <= Math.min(mapHeight - 1, bottom); y++) {
             for (int x = Math.max(0, left); x <= Math.min(mapWidth - 1, right); x++) {
                 int tile = mapTiles[y][x];
-                if (tile != TILE_WATER && tile != TILE_DOCK) {
+                // Don't mark house doors or docks as solid collision
+                if (tile != TILE_WATER && tile != TILE_DOCK && tile != TILE_HOUSE_DOOR) {
                     buildingCollision[y][x] = true;
                 }
             }
@@ -1570,16 +1655,29 @@ public final class TileManager {
                tile == TILE_TREE;
     }
 
-    public boolean isWater(int tx, int ty) {
+    public boolean isDock(int tx, int ty) {
         if (tx >= 0 && tx < mapWidth && ty >= 0 && ty < mapHeight) {
-            return mapTiles[ty][tx] == TILE_WATER;
+            return mapTiles[ty][tx] == TILE_DOCK;
         }
         return false;
     }
 
-    public boolean isDock(int tx, int ty) {
+    public boolean isWalkable(int worldX, int worldY) {
+        int tx = Math.floorDiv(worldX, TILE_SIZE);
+        int ty = Math.floorDiv(worldY, TILE_SIZE);
+
+        if (tx < 0 || tx >= mapWidth || ty < 0 || ty >= mapHeight) {
+            return false;
+        }
+
+        int tile = mapTiles[ty][tx];
+        return tile == TILE_GRASS || tile == TILE_FLOWERS || tile == TILE_DIRT ||
+               tile == TILE_DOCK || tile == TILE_HOUSE_DOOR || tile == TILE_FARM_PLOT;
+    }
+
+    public boolean isWater(int tx, int ty) {
         if (tx >= 0 && tx < mapWidth && ty >= 0 && ty < mapHeight) {
-            return mapTiles[ty][tx] == TILE_DOCK;
+            return mapTiles[ty][tx] == TILE_WATER;
         }
         return false;
     }
